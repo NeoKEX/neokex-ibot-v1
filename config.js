@@ -4,9 +4,16 @@ dotenv.config();
 export default {
   // Bot Configuration
   PREFIX: process.env.PREFIX || '!',
-  BOT_NAME: process.env.BOT_NAME || 'Instagram Bot',
+  BOT_NAME: 'NeoKEX iBOT V1',
+  BOT_VERSION: '1.0.0',
+  AUTHOR: 'NeoKEX',
+  GITHUB: 'https://github.com/NeoKEX',
   AUTO_REPLY: process.env.AUTO_REPLY === 'true' || true,
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
+  
+  // Role System (0: All Users, 1: Bot Admins, 2: Group Admins, 3: Bot Developer)
+  BOT_ADMINS: (process.env.BOT_ADMINS || '').split(',').filter(id => id.trim()),
+  DEVELOPER_ID: process.env.DEVELOPER_ID || '',
   
   // Session Configuration
   SESSION_SECRET: process.env.SESSION_SECRET || 'default_session_secret',
