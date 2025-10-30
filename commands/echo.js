@@ -4,7 +4,9 @@ export default {
     aliases: ['say', 'repeat'],
     description: 'Repeat your message',
     usage: 'echo <message>',
-    cooldown: 3
+    cooldown: 3,
+    role: 0,
+    author: 'NeoKEX'
   },
 
   async run({ api, event, args }) {

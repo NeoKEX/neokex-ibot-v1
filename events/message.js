@@ -1,5 +1,7 @@
 import config from '../config.js';
 import logger from '../utils/logger.js';
+import PermissionManager from '../utils/permissions.js';
+import Banner from '../utils/banner.js';
 
 export default {
   config: {
@@ -22,6 +24,8 @@ export default {
         threadId: event.threadId,
         message: event.body?.substring(0, 50)
       });
+
+      Banner.messageReceived(event.senderID, event.body || '');
 
       // Check if message is a command
       if (event.body && event.body.startsWith(config.PREFIX)) {
@@ -51,12 +55,29 @@ export default {
           );
         }
 
+        // Check permissions
+        const requiredRole = command.config.role || 0;
+        const hasPermission = await PermissionManager.hasPermission(event.senderID, requiredRole);
+
+        if (!hasPermission) {
+          const roleName = PermissionManager.getRoleName(requiredRole);
+          logger.warn(`User ${event.senderID} lacks permission for ${command.config.name}`, {
+            required: roleName
+          });
+          return api.sendMessage(
+            `❌ Access Denied!\n\nThis command requires: ${roleName}\nYour role is not sufficient.`,
+            event.threadId
+          );
+        }
+
         // Execute command
         try {
           logger.info(`Executing command: ${command.config.name}`, {
             user: event.senderID,
             args: args
           });
+
+          Banner.commandExecuted(command.config.name, event.senderID, true);
 
           await command.run({
             api,
@@ -75,6 +96,8 @@ export default {
             error: error.message,
             stack: error.stack
           });
+          
+          Banner.commandExecuted(command.config.name, event.senderID, false);
           
           api.sendMessage(
             `❌ Error executing command: ${error.message}`,

@@ -6,7 +6,9 @@ export default {
     aliases: ['about', 'botinfo'],
     description: 'Show bot information',
     usage: 'info',
-    cooldown: 5
+    cooldown: 5,
+    role: 0,
+    author: 'NeoKEX'
   },
 
   async run({ api, event, bot }) {
@@ -22,15 +24,20 @@ export default {
       const memoryUsage = process.memoryUsage();
       const memoryMB = Math.round(memoryUsage.heapUsed / 1024 / 1024);
       
-      let infoText = `ℹ️ ${config.BOT_NAME} Information\n\n`;
-      infoText += `Version: 1.0.0\n`;
-      infoText += `Prefix: ${config.PREFIX}\n`;
-      infoText += `Commands: ${totalCommands}\n`;
-      infoText += `Uptime: ${hours}h ${minutes}m ${seconds}s\n`;
-      infoText += `Memory: ${memoryMB}MB\n`;
-      infoText += `Node.js: ${process.version}\n`;
-      infoText += `Platform: ${process.platform}\n`;
-      infoText += `\nStatus: ✅ Fully Operational`;
+      let infoText = `╔═══════════════════════════════╗\n`;
+      infoText += `║   ${config.BOT_NAME}   ║\n`;
+      infoText += `╚═══════════════════════════════╝\n\n`;
+      infoText += `📦 Version: ${config.BOT_VERSION}\n`;
+      infoText += `👤 Author: ${config.AUTHOR}\n`;
+      infoText += `🔗 GitHub: ${config.GITHUB}\n`;
+      infoText += `⚙️ Prefix: ${config.PREFIX}\n`;
+      infoText += `📚 Commands: ${totalCommands}\n`;
+      infoText += `⏱️ Uptime: ${hours}h ${minutes}m ${seconds}s\n`;
+      infoText += `💾 Memory: ${memoryMB}MB\n`;
+      infoText += `🟢 Node.js: ${process.version}\n`;
+      infoText += `💻 Platform: ${process.platform}\n`;
+      infoText += `\n✅ Status: Fully Operational\n\n`;
+      infoText += `⚠️ WARNING: Removing credits is prohibited!`;
       
       return api.sendMessage(infoText, event.threadId);
     } catch (error) {

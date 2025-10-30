@@ -5,6 +5,7 @@ import logger from './utils/logger.js';
 import MessageQueue from './utils/messageQueue.js';
 import CommandLoader from './utils/commandLoader.js';
 import EventLoader from './utils/eventLoader.js';
+import Banner from './utils/banner.js';
 
 class InstagramBot {
   constructor() {
@@ -26,7 +27,11 @@ class InstagramBot {
    */
   async start() {
     try {
+      // Display premium banner
+      Banner.display();
+      
       logger.info('Starting Instagram Bot...');
+      Banner.info('Initializing bot components...');
       
       // Load commands and events
       await this.commandLoader.loadCommands();
@@ -218,6 +223,69 @@ class InstagramBot {
             itemId
           });
         }
+      },
+
+      sendPhoto: async (photoPath, threadId, caption = '') => {
+        return new Promise((resolve, reject) => {
+          self.messageQueue.add(async () => {
+            try {
+              const result = await self.ig.sendPhoto(threadId, photoPath, caption);
+              logger.debug('Photo sent', { threadId, photoPath });
+              Banner.success(`Photo sent to thread ${threadId}`);
+              resolve(result);
+            } catch (error) {
+              logger.error('Failed to send photo', {
+                error: error.message,
+                threadId,
+                photoPath
+              });
+              Banner.error('Send Photo', error.message);
+              reject(error);
+            }
+          });
+        });
+      },
+
+      sendVideo: async (videoPath, threadId, caption = '') => {
+        return new Promise((resolve, reject) => {
+          self.messageQueue.add(async () => {
+            try {
+              const result = await self.ig.sendVideo(threadId, videoPath, caption);
+              logger.debug('Video sent', { threadId, videoPath });
+              Banner.success(`Video sent to thread ${threadId}`);
+              resolve(result);
+            } catch (error) {
+              logger.error('Failed to send video', {
+                error: error.message,
+                threadId,
+                videoPath
+              });
+              Banner.error('Send Video', error.message);
+              reject(error);
+            }
+          });
+        });
+      },
+
+      sendAudio: async (audioPath, threadId) => {
+        return new Promise((resolve, reject) => {
+          self.messageQueue.add(async () => {
+            try {
+              const result = await self.ig.sendVoiceNote(threadId, audioPath);
+              logger.debug('Audio sent', { threadId, audioPath });
+              Banner.success(`Audio sent to thread ${threadId}`);
+              resolve(result);
+            } catch (error) {
+              logger.error('Failed to send audio', {
+                error: error.message,
+                threadId,
+                audioPath
+              });
+              Banner.error('Send Audio', error.message);
+              reject(error);
+            }
+          });
+        });
       }
     };
   }

@@ -6,7 +6,9 @@ export default {
     aliases: ['h', 'commands'],
     description: 'Show all available commands',
     usage: 'help [command]',
-    cooldown: 3
+    cooldown: 3,
+    role: 0,
+    author: 'NeoKEX'
   },
 
   async run({ api, event, args, bot }) {

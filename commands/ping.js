@@ -4,7 +4,9 @@ export default {
     aliases: ['p'],
     description: 'Check bot response time',
     usage: 'ping',
-    cooldown: 5
+    cooldown: 5,
+    role: 0,
+    author: 'NeoKEX'
   },
 
   async run({ api, event, bot }) {
