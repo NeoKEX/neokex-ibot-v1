@@ -1,7 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const logger = require('./logger');
-const config = require('../config');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import logger from './logger.js';
+import config from '../config.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class EventLoader {
   constructor(bot) {
@@ -12,8 +16,8 @@ class EventLoader {
   /**
    * Load all events from events directory
    */
-  loadEvents() {
-    const eventsPath = path.resolve(config.EVENTS_PATH);
+  async loadEvents() {
+    const eventsPath = path.resolve(__dirname, '..', config.EVENTS_PATH);
     
     if (!fs.existsSync(eventsPath)) {
       logger.warn('Events directory not found, creating it');
@@ -28,16 +32,17 @@ class EventLoader {
     for (const file of eventFiles) {
       try {
         const filePath = path.join(eventsPath, file);
-        delete require.cache[require.resolve(filePath)]; // Clear cache for reload
-        const event = require(filePath);
+        const fileUrl = `file://${filePath}`;
+        const event = await import(fileUrl + `?update=${Date.now()}`);
+        const eventModule = event.default;
 
-        if (!event.config || !event.config.name) {
+        if (!eventModule.config || !eventModule.config.name) {
           logger.warn(`Event ${file} is missing config.name, skipping`);
           continue;
         }
 
-        this.events.set(event.config.name, event);
-        logger.info(`Loaded event: ${event.config.name}`);
+        this.events.set(eventModule.config.name, eventModule);
+        logger.info(`Loaded event: ${eventModule.config.name}`);
       } catch (error) {
         logger.error(`Failed to load event ${file}`, { error: error.message });
       }
@@ -89,4 +94,4 @@ class EventLoader {
   }
 }
 
-module.exports = EventLoader;
+export default EventLoader;

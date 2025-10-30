@@ -1,6 +1,8 @@
-const fs = require('fs');
-const tough = require('tough-cookie');
-const logger = require('./logger');
+import fs from 'fs';
+import tough from 'tough-cookie';
+import logger from './logger.js';
+
+const { Cookie, CookieJar } = tough;
 
 class CookieParser {
   /**
@@ -17,7 +19,7 @@ class CookieParser {
       const content = fs.readFileSync(filePath, 'utf-8');
       const lines = content.split('\n');
       const cookies = {};
-      const cookieJar = new tough.CookieJar();
+      const cookieJar = new CookieJar();
 
       for (const line of lines) {
         // Skip comments and empty lines
@@ -34,7 +36,7 @@ class CookieParser {
 
           // Also create Cookie object for jar
           try {
-            const cookie = new tough.Cookie({
+            const cookie = new Cookie({
               key: name,
               value: value.trim(),
               domain: domain,
@@ -88,4 +90,4 @@ class CookieParser {
   }
 }
 
-module.exports = CookieParser;
+export default CookieParser;

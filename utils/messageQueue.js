@@ -1,5 +1,5 @@
-const logger = require('./logger');
-const config = require('../config');
+import logger from './logger.js';
+import config from '../config.js';
 
 class MessageQueue {
   constructor() {
@@ -82,4 +82,4 @@ class MessageQueue {
   }
 }
 
-module.exports = MessageQueue;
+export default MessageQueue;

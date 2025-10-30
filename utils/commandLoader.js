@@ -1,7 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const logger = require('./logger');
-const config = require('../config');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import logger from './logger.js';
+import config from '../config.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class CommandLoader {
   constructor() {
@@ -12,8 +16,8 @@ class CommandLoader {
   /**
    * Load all commands from commands directory
    */
-  loadCommands() {
-    const commandsPath = path.resolve(config.COMMANDS_PATH);
+  async loadCommands() {
+    const commandsPath = path.resolve(__dirname, '..', config.COMMANDS_PATH);
     
     if (!fs.existsSync(commandsPath)) {
       logger.warn('Commands directory not found, creating it');
@@ -28,25 +32,26 @@ class CommandLoader {
     for (const file of commandFiles) {
       try {
         const filePath = path.join(commandsPath, file);
-        delete require.cache[require.resolve(filePath)]; // Clear cache for reload
-        const command = require(filePath);
+        const fileUrl = `file://${filePath}`;
+        const command = await import(fileUrl + `?update=${Date.now()}`);
+        const commandModule = command.default;
 
-        if (!command.config || !command.config.name) {
+        if (!commandModule.config || !commandModule.config.name) {
           logger.warn(`Command ${file} is missing config.name, skipping`);
           continue;
         }
 
-        this.commands.set(command.config.name, command);
+        this.commands.set(commandModule.config.name, commandModule);
         
-        if (command.config.aliases) {
-          command.config.aliases.forEach(alias => {
-            this.commands.set(alias, command);
+        if (commandModule.config.aliases) {
+          commandModule.config.aliases.forEach(alias => {
+            this.commands.set(alias, commandModule);
           });
         }
 
-        logger.info(`Loaded command: ${command.config.name}`, {
-          description: command.config.description,
-          aliases: command.config.aliases || []
+        logger.info(`Loaded command: ${commandModule.config.name}`, {
+          description: commandModule.config.description,
+          aliases: commandModule.config.aliases || []
         });
       } catch (error) {
         logger.error(`Failed to load command ${file}`, { error: error.message });
@@ -109,10 +114,10 @@ class CommandLoader {
   /**
    * Reload all commands
    */
-  reloadCommands() {
+  async reloadCommands() {
     logger.info('Reloading all commands...');
     this.commands.clear();
-    this.loadCommands();
+    await this.loadCommands();
   }
 
   /**
@@ -128,4 +133,4 @@ class CommandLoader {
   }
 }
 
-module.exports = CommandLoader;
+export default CommandLoader;
