@@ -87,11 +87,15 @@ class InstagramBot {
 
       // Check if file has valid cookies (not just the template)
       const content = fs.readFileSync(config.ACCOUNT_FILE, 'utf-8');
-      const hasValidCookies = content.split('\n').some(line => 
-        !line.startsWith('#') && 
-        line.trim() !== '' && 
-        line.includes('sessionid')
-      );
+      const hasValidCookies = content.split('\n').some(line => {
+        const trimmedLine = line.trim();
+        // Skip empty lines and comment lines (but #HttpOnly_ is valid!)
+        if (trimmedLine === '' || (trimmedLine.startsWith('#') && !trimmedLine.startsWith('#HttpOnly'))) {
+          return false;
+        }
+        // Check if line contains sessionid
+        return trimmedLine.includes('sessionid');
+      });
 
       if (!hasValidCookies) {
         throw new Error('account.txt contains no valid cookies. Please add your Instagram cookies in Netscape format.');

@@ -5,8 +5,11 @@ import logger from './logger.js';
  * Role System:
  * 0 - All Users (anyone can use)
  * 1 - Bot Admins (defined in config.BOT_ADMINS)
- * 2 - Group Admins (thread administrators)
+ * 2 - Bot Admins (same as role 1 for Instagram)
  * 3 - Bot Developer (config.DEVELOPER_ID)
+ * 
+ * Note: Role 2 is equivalent to Role 1 for Instagram since
+ * Instagram DMs don't have traditional group admin roles like Facebook
  */
 
 class PermissionManager {
@@ -14,7 +17,7 @@ class PermissionManager {
    * Check if user has required role
    * @param {string} userId - User ID
    * @param {number} requiredRole - Required role level (0-3)
-   * @param {Object} threadInfo - Thread information (optional, for group admin check)
+   * @param {Object} threadInfo - Thread information (optional, for future use)
    * @returns {boolean} True if user has permission
    */
   static async hasPermission(userId, requiredRole = 0, threadInfo = null) {
@@ -33,25 +36,9 @@ class PermissionManager {
       return true;
     }
 
-    // Role 1: Bot Admins
-    if (requiredRole === 1) {
+    // Role 1 & 2: Bot Admins (Role 2 = Role 1 for Instagram)
+    if (requiredRole === 1 || requiredRole === 2) {
       return config.BOT_ADMINS.includes(userId);
-    }
-
-    // Role 2: Group Admins
-    if (requiredRole === 2) {
-      // Check if user is bot admin first (bot admins have group admin rights)
-      if (config.BOT_ADMINS.includes(userId)) {
-        return true;
-      }
-
-      // Check thread admin status
-      if (threadInfo && threadInfo.admins) {
-        return threadInfo.admins.includes(userId);
-      }
-
-      logger.warn('Group admin check requested but no thread info provided');
-      return false;
     }
 
     return false;
@@ -66,7 +53,7 @@ class PermissionManager {
     const roles = {
       0: 'All Users',
       1: 'Bot Admin',
-      2: 'Group Admin',
+      2: 'Bot Admin',
       3: 'Bot Developer'
     };
     return roles[role] || 'Unknown';
@@ -75,7 +62,7 @@ class PermissionManager {
   /**
    * Get user's highest role
    * @param {string} userId - User ID
-   * @param {Object} threadInfo - Thread information (optional)
+   * @param {Object} threadInfo - Thread information (optional, for future use)
    * @returns {number} Highest role number
    */
   static getUserRole(userId, threadInfo = null) {
@@ -85,10 +72,6 @@ class PermissionManager {
 
     if (config.BOT_ADMINS.includes(userId)) {
       return 1;
-    }
-
-    if (threadInfo && threadInfo.admins && threadInfo.admins.includes(userId)) {
-      return 2;
     }
 
     return 0;
