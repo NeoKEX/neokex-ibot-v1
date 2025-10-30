@@ -1,0 +1,12 @@
+# Netscape HTTP Cookie File
+# This file contains Instagram session cookies in Netscape format
+# To get your cookies:
+# 1. Login to Instagram on your browser
+# 2. Use a browser extension like "EditThisCookie" or "Get cookies.txt LOCALLY"
+# 3. Export cookies in Netscape format
+# 4. Paste them below (replace this example)
+
+# Example format:
+# .instagram.com	TRUE	/	TRUE	0	sessionid	your_session_id_here
+# .instagram.com	TRUE	/	TRUE	0	csrftoken	your_csrf_token_here
+# .instagram.com	TRUE	/	TRUE	0	ds_user_id	your_user_id_here
