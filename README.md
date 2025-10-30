@@ -1,17 +1,78 @@
-# Advanced Instagram Bot
+# NeoKEX iBOT V1
 
-A highly advanced Instagram bot similar to GoatbotV2, built with Node.js and the neokex-ica chat API.
+```
+███╗   ██╗███████╗ ██████╗ ██╗  ██╗███████╗██╗  ██╗
+████╗  ██║██╔════╝██╔═══██╗██║ ██╔╝██╔════╝╚██╗██╔╝
+██╔██╗ ██║█████╗  ██║   ██║█████╔╝ █████╗   ╚███╔╝ 
+██║╚██╗██║██╔══╝  ██║   ██║██╔═██╗ ██╔══╝   ██╔██╗ 
+██║ ╚████║███████╗╚██████╔╝██║  ██╗███████╗██╔╝ ██╗
+╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 
-## Features
+              ██╗██████╗  ██████╗ ████████╗    ██╗   ██╗ ██╗
+              ██║██╔══██╗██╔═══██╗╚══██╔══╝    ██║   ██║███║
+              ██║██████╔╝██║   ██║   ██║       ██║   ██║╚██║
+              ██║██╔══██╗██║   ██║   ██║       ╚██╗ ██╔╝ ██║
+              ██║██████╔╝╚██████╔╝   ██║        ╚████╔╝  ██║
+              ╚═╝╚═════╝  ╚═════╝    ╚═╝         ╚═══╝   ╚═╝
+```
 
-- 🔐 Cookie-based authentication (Netscape format)
-- 💬 Comprehensive message handling
-- 🤖 Dynamic command system with cooldowns
-- 📝 Event-driven architecture
-- 🔄 Auto-reconnect with error recovery
-- 📊 Advanced logging system
-- ⚡ Message queue with rate limiting
-- 🎯 Plugin/module support
+**A highly advanced Instagram bot similar to GoatbotV2**
+
+👤 **Author:** NeoKEX  
+🔗 **GitHub:** https://github.com/NeoKEX  
+📦 **Version:** 1.0.0  
+
+---
+
+## ⚠️ CRITICAL WARNING
+
+**DO NOT REMOVE OR MODIFY CREDITS!**
+
+Removing or changing the author credits will result in:
+- 🚫 Immediate account ban from support
+- ❌ Loss of access to future updates
+- 📢 Public exposure of copyright violation
+- ⚖️ Possible legal action
+
+**✅ Please respect the original creator's work!**
+
+---
+
+## ✨ Features
+
+### 🔐 **Authentication & Security**
+- Cookie-based authentication (Netscape format)
+- Role-based permission system (4 levels)
+- Secure session management
+
+### 💬 **Messaging Capabilities**
+- Send text messages
+- Send photos with captions
+- Send videos with captions
+- Send audio/voice notes
+- Auto-reply functionality
+
+### 🛡️ **Role System**
+- **Level 0:** All Users - Anyone can use
+- **Level 1:** Bot Admins - Defined in config
+- **Level 2:** Group Admins - Thread administrators
+- **Level 3:** Bot Developer - Ultimate access
+
+### 🤖 **Command System**
+- Dynamic command loading
+- Command cooldowns
+- Author credits on each command
+- Alias support
+- Permission-based access
+
+### 📊 **Advanced Features**
+- Event-driven architecture
+- Auto-reconnect with error recovery
+- Winston logging system
+- Message queue with rate limiting
+- Duplicate message prevention
+- Premium console output
+- Colored & formatted logs
 
 ## Setup
 
@@ -33,14 +94,26 @@ Required cookies:
 - `csrftoken`
 - `ds_user_id` (optional but recommended)
 
-### 3. Configure Environment
+### 3. Configure Environment (Optional)
 
-Edit the configuration in `config.js` to customize:
-- Command prefix (default: `!`)
-- Bot name
-- Auto-reply settings
-- Rate limiting
-- Logging level
+You can set these environment variables:
+
+```bash
+# Bot Configuration
+PREFIX=!                           # Command prefix
+BOT_ADMINS=user_id1,user_id2      # Comma-separated admin user IDs
+DEVELOPER_ID=your_user_id         # Bot developer user ID
+
+# Rate Limiting
+MESSAGE_DELAY_MS=2000             # Delay between messages
+COMMAND_COOLDOWN_MS=3000          # Global command cooldown
+POLLING_INTERVAL_MS=5000          # Message polling interval
+
+# System
+LOG_LEVEL=info                    # Logging level (info, debug, error)
+AUTO_RECONNECT=true               # Auto-reconnect on failure
+MAX_RECONNECT_ATTEMPTS=5          # Maximum reconnection attempts
+```
 
 ### 4. Run the Bot
 
@@ -48,42 +121,61 @@ Edit the configuration in `config.js` to customize:
 node index.js
 ```
 
-## Commands
+## 📚 Built-in Commands
 
-The bot comes with several built-in commands:
-
-- `!help` - Show all available commands
-- `!ping` - Check bot response time
-- `!info` - Show bot information
+### General Commands (Role 0 - All Users)
+- `!help [command]` - Show all available commands or get help for specific command
+- `!ping` - Check bot response time and uptime
+- `!info` - Show comprehensive bot information
 - `!echo <message>` - Repeat your message
+- `!credits` - Show bot credits and author information
 
-## Creating Custom Commands
+### Admin Commands (Role 1 - Bot Admins)
+- `!admin` - View admin panel and bot statistics
+
+### Developer Commands (Role 3 - Bot Developer)
+- `!dev` - Access developer control panel with system information
+
+## 🔧 Creating Custom Commands
 
 Create a new file in the `commands/` directory:
 
 ```javascript
-module.exports = {
+export default {
   config: {
     name: 'commandname',
     aliases: ['alias1', 'alias2'],
     description: 'Command description',
     usage: 'commandname [args]',
-    cooldown: 5 // seconds
+    cooldown: 5,        // Seconds
+    role: 0,            // 0=All, 1=Admin, 2=Group Admin, 3=Developer
+    author: 'NeoKEX'    // Keep author credit!
   },
 
   async run({ api, event, args, bot }) {
-    // Command logic here
+    // Send text message
     await api.sendMessage('Response', event.threadId);
+    
+    // Send photo
+    await api.sendPhoto('./path/to/image.jpg', event.threadId, 'Caption');
+    
+    // Send video
+    await api.sendVideo('./path/to/video.mp4', event.threadId, 'Caption');
+    
+    // Send audio
+    await api.sendAudio('./path/to/audio.mp3', event.threadId);
   }
 };
 ```
 
-## Creating Custom Events
+**⚠️ IMPORTANT:** Always keep the `author: 'NeoKEX'` field in your commands!
+
+## 🎯 Creating Custom Events
 
 Create a new file in the `events/` directory:
 
 ```javascript
-module.exports = {
+export default {
   config: {
     name: 'eventname',
     description: 'Event description'
@@ -91,6 +183,9 @@ module.exports = {
 
   async run(bot, data) {
     // Event handling logic
+    const { api, commandLoader, eventLoader } = bot;
+    
+    // Your custom event code here
   }
 };
 ```
@@ -161,10 +256,42 @@ Console output includes colored, formatted logs for easy monitoring.
 - Reduce message frequency
 - The bot automatically queues messages to prevent rate limiting
 
-## License
+## 📄 License
 
-ISC
+MIT License - See LICENSE file for details
 
-## Support
+## 💎 Credits
 
-For issues and questions, check the logs directory for detailed error information.
+**Created by:** NeoKEX  
+**GitHub:** https://github.com/NeoKEX  
+**Version:** 1.0.0
+
+### Special Thanks
+- All supporters and contributors
+- Open source community
+- Instagram bot developers
+
+## ⚠️ Disclaimer
+
+This bot is for educational purposes only. Instagram's Terms of Service prohibit automated access to their platform. Using this bot may result in your Instagram account being banned or restricted. Use at your own risk.
+
+**The creator is not responsible for any misuse or account bans.**
+
+## 🤝 Support
+
+- 🐛 **Bug Reports:** Open an issue on GitHub
+- 💡 **Feature Requests:** Open a discussion on GitHub
+- 📧 **Contact:** Through GitHub profile
+- ⭐ **Like this project?** Star it on GitHub!
+
+## ⚖️ Copyright Notice
+
+Copyright © 2025 NeoKEX. All rights reserved.
+
+**This bot and its code are protected by copyright law.** Unauthorized copying, distribution, or modification of this software without permission is strictly prohibited and may result in legal action.
+
+**DO NOT REMOVE OR MODIFY THE CREDITS!**
+
+---
+
+Made with ❤️ by **NeoKEX**
