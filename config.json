@@ -9,8 +9,8 @@
   },
   
   "permissions": {
-    "admins": [],
-    "developer": "",
+    "admins": ["52943709733"],
+    "developer": "52943709733",
     "whitelist": {
       "enabled": false,
       "users": []
