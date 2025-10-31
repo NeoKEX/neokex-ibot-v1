@@ -1,7 +1,3 @@
-const logger = require('../utils/logger');
-const database = require('../utils/database');
-const config = require('../config');
-
 module.exports = {
   config: {
     name: 'stats',
@@ -13,7 +9,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event, bot }) {
+  async run({ api, event, bot, logger, database, config }) {
     try {
       const userId = event.senderID;
       

@@ -1,6 +1,3 @@
-const config = require('../config');
-const logger = require('../utils/logger');
-
 module.exports = {
   config: {
     name: 'help',
@@ -12,7 +9,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event, args, bot }) {
+  async run({ api, event, args, bot, logger, config }) {
     try {
       const { commandLoader } = bot;
       const prefix = config.PREFIX;

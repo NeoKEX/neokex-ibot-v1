@@ -1,5 +1,3 @@
-const logger = require('../utils/logger');
-
 module.exports = {
   config: {
     name: 'joke',
@@ -11,7 +9,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event }) {
+  async run({ api, event, logger }) {
     try {
       const jokes = [
         "Why don't scientists trust atoms? Because they make up everything!",

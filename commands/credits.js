@@ -1,6 +1,3 @@
-const config = require('../config');
-const logger = require('../utils/logger');
-
 module.exports = {
   config: {
     name: 'credits',
@@ -12,7 +9,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event }) {
+  async run({ api, event, logger, config }) {
     try {
       let creditsText = `
 ╔═══════════════════════════════════════════════╗

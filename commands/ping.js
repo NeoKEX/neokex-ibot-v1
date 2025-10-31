@@ -1,5 +1,3 @@
-const logger = require('../utils/logger');
-
 module.exports = {
   config: {
     name: 'ping',
@@ -11,7 +9,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event, bot }) {
+  async run({ api, event, bot, logger }) {
     try {
       const startTime = Date.now();
       

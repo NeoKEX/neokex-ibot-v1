@@ -1,5 +1,3 @@
-const logger = require('../utils/logger');
-
 module.exports = {
   config: {
     name: '8ball',
@@ -11,7 +9,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event, args }) {
+  async run({ api, event, args, logger }) {
     try {
       if (args.length === 0) {
         return api.sendMessage(

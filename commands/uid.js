@@ -1,5 +1,3 @@
-const logger = require('../utils/logger');
-
 module.exports = {
   config: {
     name: 'uid',
@@ -11,7 +9,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event, args, bot }) {
+  async run({ api, event, args, bot, logger }) {
     try {
       // If no username provided, return sender's UID
       if (args.length === 0) {

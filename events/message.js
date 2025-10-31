@@ -4,6 +4,7 @@ const PermissionManager = require('../utils/permissions');
 const Banner = require('../utils/banner');
 const database = require('../utils/database');
 const moderation = require('../utils/moderation');
+const ConfigManager = require('../utils/configManager');
 
 module.exports = {
   config: {
@@ -116,7 +117,12 @@ module.exports = {
             event,
             args,
             bot,
-            commandName: command.config.name
+            commandName: command.config.name,
+            logger,
+            database,
+            config,
+            PermissionManager,
+            ConfigManager
           });
 
           // Set cooldown

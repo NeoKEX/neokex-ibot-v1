@@ -1,6 +1,3 @@
-const logger = require('../utils/logger');
-const config = require('../config');
-
 module.exports = {
   config: {
     name: 'unsend',
@@ -12,7 +9,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event, bot }) {
+  async run({ api, event, bot, logger, config }) {
     try {
       // Debug: Log event structure
       if (config.LOG_LEVEL === 'debug') {

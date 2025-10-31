@@ -1,5 +1,3 @@
-const logger = require('../utils/logger');
-
 module.exports = {
   config: {
     name: 'coinflip',
@@ -11,7 +9,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event }) {
+  async run({ api, event, logger }) {
     try {
       const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
       const emoji = result === 'Heads' ? '🪙' : '💰';

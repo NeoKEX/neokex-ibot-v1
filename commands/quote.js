@@ -1,5 +1,3 @@
-const logger = require('../utils/logger');
-
 module.exports = {
   config: {
     name: 'quote',
@@ -11,7 +9,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event }) {
+  async run({ api, event, logger }) {
     try {
       const quotes = [
         { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },

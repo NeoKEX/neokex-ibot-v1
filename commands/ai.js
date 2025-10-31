@@ -1,4 +1,3 @@
-const logger = require('../utils/logger');
 const axios = require('axios');
 
 module.exports = {
@@ -12,7 +11,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event, args }) {
+  async run({ api, event, args, logger }) {
     try {
       if (args.length === 0) {
         return api.sendMessage(

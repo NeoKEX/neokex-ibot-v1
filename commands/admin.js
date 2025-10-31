@@ -1,7 +1,3 @@
-const config = require('../config');
-const PermissionManager = require('../utils/permissions');
-const ConfigManager = require('../utils/configManager');
-
 module.exports = {
   config: {
     name: 'admin',
@@ -13,7 +9,7 @@ module.exports = {
     author: 'NeoKEX'
   },
 
-  async run({ api, event, args, bot }) {
+  async run({ api, event, args, bot, logger, config, PermissionManager, ConfigManager }) {
     try {
       const senderRole = PermissionManager.getUserRole(event.senderID);
       const isDeveloper = event.senderID === config.DEVELOPER_ID;
