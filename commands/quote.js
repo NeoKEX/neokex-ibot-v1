@@ -45,7 +45,7 @@ export default {
 
       return api.sendMessage(message, event.threadId);
     } catch (error) {
-      console.error('Error in quote command:', error);
+
       return api.sendMessage('Error fetching quote.', event.threadId);
     }
   }

@@ -19,12 +19,7 @@ export default {
         return;
       }
 
-      logger.info('Received message', {
-        from: event.senderID,
-        threadId: event.threadId,
-        message: event.body?.substring(0, 50)
-      });
-
+      // Log message only in debug mode
       Banner.messageReceived(event.senderID, event.body || '');
 
       // Check if message is a command
@@ -35,7 +30,6 @@ export default {
         const command = commandLoader.getCommand(commandName);
         
         if (!command) {
-          logger.debug(`Unknown command: ${commandName}`);
           return;
         }
 
@@ -48,7 +42,6 @@ export default {
         );
 
         if (remainingCooldown > 0) {
-          logger.debug(`User ${event.senderID} on cooldown for ${command.config.name}`);
           return api.sendMessage(
             `⏰ Please wait ${remainingCooldown}s before using this command again.`,
             event.threadId
@@ -61,9 +54,6 @@ export default {
 
         if (!hasPermission) {
           const roleName = PermissionManager.getRoleName(requiredRole);
-          logger.warn(`User ${event.senderID} lacks permission for ${command.config.name}`, {
-            required: roleName
-          });
           return api.sendMessage(
             `❌ Access Denied!\n\nThis command requires: ${roleName}\nYour role is not sufficient.`,
             event.threadId
@@ -72,11 +62,6 @@ export default {
 
         // Execute command
         try {
-          logger.info(`Executing command: ${command.config.name}`, {
-            user: event.senderID,
-            args: args
-          });
-
           Banner.commandExecuted(command.config.name, event.senderID, true);
 
           await command.run({
@@ -92,9 +77,8 @@ export default {
             commandLoader.setCooldown(event.senderID, command.config.name, cooldownTime);
           }
         } catch (error) {
-          logger.error(`Error executing command ${command.config.name}`, {
-            error: error.message,
-            stack: error.stack
+          logger.error(`Command error: ${command.config.name}`, {
+            error: error.message
           });
           
           Banner.commandExecuted(command.config.name, event.senderID, false);

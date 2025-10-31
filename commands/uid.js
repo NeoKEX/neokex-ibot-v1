@@ -89,7 +89,7 @@ export default {
           return api.sendMessage(message, event.threadId);
           
         } catch (error2) {
-          console.error('Error searching user:', error2);
+    
           return api.sendMessage(
             `❌ Failed to find user @${username}\n\n` +
             `Possible reasons:\n` +
@@ -103,7 +103,7 @@ export default {
       }
       
     } catch (error) {
-      console.error('Error in uid command:', error);
+
       return api.sendMessage(
         `❌ An error occurred while fetching user ID.\n\n` +
         `Error: ${error.message}`,

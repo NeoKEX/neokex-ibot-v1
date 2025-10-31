@@ -57,7 +57,7 @@ Removing or modifying credits is strictly prohibited!
       
       return api.sendMessage(creditsText, event.threadId);
     } catch (error) {
-      console.error('Error in credits command:', error);
+
       return api.sendMessage('Error displaying credits.', event.threadId);
     }
   }

@@ -30,7 +30,7 @@ export default {
 
       return api.sendMessage(message, event.threadId);
     } catch (error) {
-      console.error('Error in dice command:', error);
+
       return api.sendMessage('Error rolling dice.', event.threadId);
     }
   }

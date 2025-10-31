@@ -48,7 +48,7 @@ export default {
         );
       }
     } catch (error) {
-      console.error('Error in calc command:', error);
+
       return api.sendMessage('Error executing calculation.', event.threadId);
     }
   }

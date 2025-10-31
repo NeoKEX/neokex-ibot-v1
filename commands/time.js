@@ -77,7 +77,7 @@ export default {
         );
       }
     } catch (error) {
-      console.error('Error in time command:', error);
+
       return api.sendMessage('Error getting time information.', event.threadId);
     }
   }

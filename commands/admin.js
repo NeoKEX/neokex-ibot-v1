@@ -71,7 +71,7 @@ export default {
       );
 
     } catch (error) {
-      console.error('Error in admin command:', error);
+
       return api.sendMessage('❌ Error executing admin command.', event.threadId);
     }
   },
@@ -192,7 +192,7 @@ export default {
       }
 
     } catch (error) {
-      console.error('Error verifying user:', error);
+
       
       // Still add them even if verification fails
       const success = ConfigManager.addAdmin(userIdToAdd);

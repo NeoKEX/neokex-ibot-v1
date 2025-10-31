@@ -9,6 +9,9 @@ import Banner from './utils/banner.js';
 
 class InstagramBot {
   constructor() {
+    // Suppress neokex-ica verbose logging by filtering console output
+    this.setupCleanLogging();
+    
     this.ig = new InstagramChatAPI();
     this.api = null;
     this.userID = null;
@@ -22,6 +25,53 @@ class InstagramBot {
     this.processedMessages = new Set();
   }
 
+  setupCleanLogging() {
+    // Store original console methods
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    // Override console.log to filter neokex-ica verbose messages
+    console.log = (...args) => {
+      const message = args.join(' ');
+      // Keep important neokex-ica messages
+      if (message.includes('neokex-ica')) {
+        if (message.includes('[WARN]') || 
+            message.includes('[ERROR]') ||
+            message.includes('Authenticated') || 
+            message.includes('Verified user') ||
+            message.includes('session') ||
+            message.includes('rate limit')) {
+          logger.warn(message.replace(/\[.*?\] neokex-ica › /, 'Instagram: '));
+          return;
+        }
+        // Skip verbose INFO/EVENT/SUCCESS messages
+        if (message.includes('[INFO]') || message.includes('[EVENT]') || message.includes('[SUCCESS]')) {
+          return;
+        }
+      }
+      originalLog.apply(console, args);
+    };
+    
+    // Override console.error to filter and log properly
+    console.error = (...args) => {
+      const message = args.join(' ');
+      // Filter out expected errors
+      if (message.includes('Failed to get inbox') || 
+          message.includes('Failed to get pending inbox') ||
+          message.includes('Inbox endpoint failed')) {
+        return;
+      }
+      // Log errors through winston
+      if (message.includes('neokex-ica')) {
+        logger.error(message.replace(/\[ERROR\] neokex-ica › /, 'Instagram API: '));
+      } else if (message.includes('Error')) {
+        logger.error(message);
+      } else {
+        originalError.apply(console, args);
+      }
+    };
+  }
+
   /**
    * Initialize and start the bot
    */
@@ -31,7 +81,6 @@ class InstagramBot {
       Banner.display();
       
       logger.info('Starting Instagram Bot...');
-      Banner.info('Initializing bot components...');
       
       // Load commands and events
       await this.commandLoader.loadCommands();
@@ -53,7 +102,6 @@ class InstagramBot {
 
       // Start listening for messages
       await this.ig.dm.startPolling(config.POLLING_INTERVAL_MS);
-      logger.info(`Started polling for messages (interval: ${config.POLLING_INTERVAL_MS}ms)`);
 
       // Keep the process alive
       this.keepAlive();
@@ -342,7 +390,12 @@ class InstagramBot {
         senderID: message.userId || message.user_id || message.senderId,
         body: message.text || message.message || '',
         timestamp: message.timestamp || Date.now(),
-        type: message.itemType || message.item_type || 'text'
+        type: message.itemType || message.item_type || 'text',
+        // Include reply information if present
+        replyToItemId: message.replyToItemId || message.replied_to_item_id || message.replyTo || null,
+        // Include additional message metadata
+        attachments: message.attachments || [],
+        isVoiceMessage: message.is_voice_message || false
       };
 
       // Ignore messages from self

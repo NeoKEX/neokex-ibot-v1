@@ -18,7 +18,7 @@ export default {
 
       return api.sendMessage(message, event.threadId);
     } catch (error) {
-      console.error('Error in coinflip command:', error);
+
       return api.sendMessage('Error flipping coin.', event.threadId);
     }
   }

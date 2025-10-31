@@ -134,6 +134,7 @@ node index.js
 #### Instagram Features
 - `!uid [username]` - Get Instagram User ID from username
 - `!userinfo <username>` - Get detailed Instagram user information and statistics
+- `!unsend` - Unsend a message (reply to the message you want to unsend)
 
 #### Fun & Entertainment
 - `!quote` - Get a random inspirational quote

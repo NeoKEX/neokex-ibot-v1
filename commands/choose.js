@@ -39,7 +39,7 @@ export default {
 
       return api.sendMessage(message, event.threadId);
     } catch (error) {
-      console.error('Error in choose command:', error);
+
       return api.sendMessage('Error making choice.', event.threadId);
     }
   }

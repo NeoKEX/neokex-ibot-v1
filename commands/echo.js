@@ -18,7 +18,7 @@ export default {
       const message = args.join(' ');
       return api.sendMessage(message, event.threadId);
     } catch (error) {
-      console.error('Error in echo command:', error);
+
       return api.sendMessage('Error executing echo command.', event.threadId);
     }
   }

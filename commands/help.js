@@ -54,7 +54,7 @@ export default {
 
       return api.sendMessage(helpText, event.threadId);
     } catch (error) {
-      console.error('Error in help command:', error);
+
       return api.sendMessage('Error displaying help information.', event.threadId);
     }
   }

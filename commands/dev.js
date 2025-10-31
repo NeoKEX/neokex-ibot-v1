@@ -47,7 +47,7 @@ export default {
       
       return api.sendMessage(devText, event.threadId);
     } catch (error) {
-      console.error('Error in dev command:', error);
+
       return api.sendMessage('Error displaying developer panel.', event.threadId);
     }
   }

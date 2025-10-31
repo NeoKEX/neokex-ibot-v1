@@ -45,7 +45,7 @@ export default {
 
       return api.sendMessage(message, event.threadId);
     } catch (error) {
-      console.error('Error in joke command:', error);
+
       return api.sendMessage('Error fetching joke.', event.threadId);
     }
   }

@@ -76,7 +76,7 @@ export default {
         return api.sendMessage(message, event.threadId);
 
       } catch (searchError) {
-        console.error('Error fetching user info:', searchError);
+  
         return api.sendMessage(
           `❌ Error fetching user information for @${username}\n\n` +
           'This could be due to:\n' +
@@ -89,7 +89,7 @@ export default {
       }
 
     } catch (error) {
-      console.error('Error in userinfo command:', error);
+
       return api.sendMessage('Error executing userinfo command.', event.threadId);
     }
   }

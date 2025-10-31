@@ -29,7 +29,7 @@ export default {
       
       return api.sendMessage(message, event.threadId);
     } catch (error) {
-      console.error('Error in ping command:', error);
+
       return api.sendMessage('Error executing ping command.', event.threadId);
     }
   }

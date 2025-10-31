@@ -41,7 +41,7 @@ export default {
       
       return api.sendMessage(infoText, event.threadId);
     } catch (error) {
-      console.error('Error in info command:', error);
+
       return api.sendMessage('Error displaying bot information.', event.threadId);
     }
   }
