@@ -4,9 +4,12 @@
 This is a highly advanced Instagram bot built with Node.js and the neokex-ica chat API. The bot is designed to handle Instagram messages, commands, and events similar to GoatbotV2's architecture.
 
 ## Recent Changes
-- **2025-10-31 (Latest)**: Message Visibility & Prefix Command Fixes
+- **2025-10-31 (Latest)**: Immediate Message Response & Visibility
+  - **Removed Message Queue**: Bot now responds instantly without queueing delays
+    - Messages are sent immediately when commands are executed
+    - No more artificial delays from queue processing
   - **Message Visibility Fixed**: Messages now show immediately in chat
-    - Added 500ms post-send delay to ensure Instagram processes messages
+    - Increased post-send delay to 2000ms to ensure Instagram processes messages
     - No more need to refresh chat to see bot responses
   - **Prefix Command Behavior**: Proper separation of info display vs. command execution
     - Type `prefix` (without prefix) → Shows current global and thread prefix info
@@ -123,7 +126,6 @@ This is a highly advanced Instagram bot built with Node.js and the neokex-ica ch
 │   ├── permissions.js   # Role-based permissions
 │   ├── banner.js        # Console banners
 │   ├── cookieParser.js  # Parse Netscape cookie format
-│   ├── messageQueue.js  # Message queue with rate limiting
 │   ├── commandLoader.js # Dynamic command loading
 │   └── eventLoader.js   # Event system management
 ├── logs/                # Log files (auto-generated)
@@ -146,7 +148,7 @@ None set yet.
 - Comprehensive event handling system
 - Command system with customizable prefixes (global & per-thread)
 - Automatic error recovery and reconnection
-- Intelligent message queue with Instagram-friendly rate limiting
+- Instant message delivery with visibility optimization
 - Advanced logging with file and console output
 - Dynamic command and event loading
 - Cooldown system for commands
