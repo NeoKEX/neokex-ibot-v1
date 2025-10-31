@@ -47,13 +47,16 @@ module.exports = {
       // Log message only in debug mode
       Banner.messageReceived(event.senderID, event.body || '');
 
+      // Ensure event.body is a string
+      if (!event.body || typeof event.body !== 'string') {
+        return; // Skip non-text messages
+      }
+
       // Check for auto-responses (before command check)
-      if (event.body) {
-        const autoResponse = database.findAutoResponse(event.body);
-        if (autoResponse) {
-          await api.sendMessage(autoResponse.response, event.threadId);
-          return;
-        }
+      const autoResponse = database.findAutoResponse(event.body);
+      if (autoResponse) {
+        await api.sendMessage(autoResponse.response, event.threadId);
+        return;
       }
 
       // Get thread-specific prefix or use global prefix
@@ -61,7 +64,7 @@ module.exports = {
       const prefix = threadData?.prefix || config.PREFIX;
 
       // Check if message is a command
-      if (event.body && event.body.startsWith(prefix)) {
+      if (event.body.startsWith(prefix)) {
         const args = event.body.slice(prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
         
@@ -125,9 +128,9 @@ module.exports = {
           Banner.commandExecuted(command.config.name, event.senderID, true);
 
           // Show typing indicator if enabled
-          if (config.TYPING_INDICATOR) {
+          if (config.TYPING_INDICATOR && bot.ig.dm && typeof bot.ig.dm.indicateActivity === 'function') {
             try {
-              await bot.ig.dm.markAsTyping(event.threadId);
+              await bot.ig.dm.indicateActivity(event.threadId);
             } catch (typingError) {
               logger.debug('Could not send typing indicator', { error: typingError.message });
             }
