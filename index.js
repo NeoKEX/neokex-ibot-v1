@@ -438,7 +438,7 @@ class InstagramBot {
       // Skip if we've already processed this message (check database for persistence)
       const database = require('./utils/database');
       if (database.isMessageProcessed(messageId)) {
-        logger.debug(`Skipping already processed message: ${messageId}`);
+        // Silently skip - Instagram re-broadcasts messages when ACK isn't received
         return;
       }
       
