@@ -14,7 +14,7 @@ module.exports = {
 
   async run(bot, data) {
     try {
-      const { api, commandLoader, messageQueue } = bot;
+      const { api, commandLoader } = bot;
       const event = data;
 
       // Ignore messages from self

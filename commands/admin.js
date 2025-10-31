@@ -91,7 +91,7 @@ module.exports = {
     adminText += `📊 Bot Statistics:\n`;
     adminText += `  • Commands: ${bot.commandLoader.getAllCommandNames().length}\n`;
     adminText += `  • Events: ${bot.eventLoader.getAllEventNames().length}\n`;
-    adminText += `  • Queue: ${bot.messageQueue.getQueueLength()} messages\n\n`;
+    adminText += `  • Message Delivery: Instant (No Queue)\n\n`;
     
     adminText += `🔐 Role System:\n`;
     adminText += `  0 - All Users\n`;
