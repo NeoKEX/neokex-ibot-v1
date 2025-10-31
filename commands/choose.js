@@ -1,3 +1,5 @@
+const logger = require('../utils/logger');
+
 module.exports = {
   config: {
     name: 'choose',
@@ -39,7 +41,7 @@ module.exports = {
 
       return api.sendMessage(message, event.threadId);
     } catch (error) {
-
+      logger.error('Error in choose command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error making choice.', event.threadId);
     }
   }

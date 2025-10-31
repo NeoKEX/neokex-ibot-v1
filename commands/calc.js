@@ -1,3 +1,5 @@
+const logger = require('../utils/logger');
+
 module.exports = {
   config: {
     name: 'calc',
@@ -32,7 +34,7 @@ module.exports = {
       }
 
       try {
-        const result = eval(expression);
+        const result = this.safeEval(expression);
 
         if (!isFinite(result)) {
           return api.sendMessage('❌ Result is not a valid number!', event.threadId);
@@ -48,8 +50,13 @@ module.exports = {
         );
       }
     } catch (error) {
-
+      logger.error('Error in calc command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error executing calculation.', event.threadId);
     }
+  },
+
+  safeEval(expr) {
+    const sanitized = expr.replace(/[^0-9+\-*/().\s]/g, '');
+    return Function('"use strict"; return (' + sanitized + ')')();
   }
 };

@@ -1,4 +1,5 @@
 const config = require('../config');
+const logger = require('../utils/logger');
 
 module.exports = {
   config: {
@@ -57,7 +58,7 @@ Removing or modifying credits is strictly prohibited!
       
       return api.sendMessage(creditsText, event.threadId);
     } catch (error) {
-
+      logger.error('Error in credits command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error displaying credits.', event.threadId);
     }
   }

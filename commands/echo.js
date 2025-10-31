@@ -1,3 +1,5 @@
+const logger = require('../utils/logger');
+
 module.exports = {
   config: {
     name: 'echo',
@@ -18,7 +20,7 @@ module.exports = {
       const message = args.join(' ');
       return api.sendMessage(message, event.threadId);
     } catch (error) {
-
+      logger.error('Error in echo command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error executing echo command.', event.threadId);
     }
   }

@@ -2,6 +2,8 @@ const config = require('../config');
 const logger = require('../utils/logger');
 const PermissionManager = require('../utils/permissions');
 const Banner = require('../utils/banner');
+const database = require('../utils/database');
+const moderation = require('../utils/moderation');
 
 module.exports = {
   config: {
@@ -19,8 +21,39 @@ module.exports = {
         return;
       }
 
+      // Track user activity
+      const user = database.getUser(event.senderID);
+      user.messageCount++;
+      database.updateUser(event.senderID, user);
+
+      // Moderation checks
+      const moderationResult = await moderation.moderateMessage(event.senderID, event.body);
+      if (!moderationResult.allowed) {
+        logger.info(`Message blocked from ${event.senderID}: ${moderationResult.reason}`);
+        if (moderationResult.message && moderationResult.reason !== 'whitelist') {
+          await api.sendMessage(moderationResult.message, event.threadId);
+        }
+        return;
+      }
+
+      // Send welcome message to new users
+      if (config.WELCOME_MESSAGE_ENABLED && !database.hasBeenWelcomed(event.senderID)) {
+        await api.sendMessage(config.WELCOME_MESSAGE, event.threadId);
+        database.markAsWelcomed(event.senderID);
+        logger.info(`Sent welcome message to user ${event.senderID}`);
+      }
+
       // Log message only in debug mode
       Banner.messageReceived(event.senderID, event.body || '');
+
+      // Check for auto-responses (before command check)
+      if (event.body) {
+        const autoResponse = database.findAutoResponse(event.body);
+        if (autoResponse) {
+          await api.sendMessage(autoResponse.response, event.threadId);
+          return;
+        }
+      }
 
       // Check if message is a command
       if (event.body && event.body.startsWith(config.PREFIX)) {
@@ -63,6 +96,20 @@ module.exports = {
         // Execute command
         try {
           Banner.commandExecuted(command.config.name, event.senderID, true);
+
+          // Show typing indicator if enabled
+          if (config.TYPING_INDICATOR) {
+            try {
+              await bot.ig.dm.markAsTyping(event.threadId);
+            } catch (typingError) {
+              logger.debug('Could not send typing indicator', { error: typingError.message });
+            }
+          }
+
+          // Track command usage
+          user.commandCount++;
+          database.updateUser(event.senderID, user);
+          database.incrementStat('totalCommands');
 
           await command.run({
             api,

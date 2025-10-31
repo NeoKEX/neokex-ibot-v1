@@ -1,3 +1,5 @@
+const logger = require('../utils/logger');
+
 module.exports = {
   config: {
     name: 'uid',
@@ -89,7 +91,7 @@ module.exports = {
           return api.sendMessage(message, event.threadId);
           
         } catch (error2) {
-    
+          logger.error('Error in uid command (search fallback)', { error: error2.message, stack: error2.stack });
           return api.sendMessage(
             `❌ Failed to find user @${username}\n\n` +
             `Possible reasons:\n` +
@@ -103,7 +105,7 @@ module.exports = {
       }
       
     } catch (error) {
-
+      logger.error('Error in uid command', { error: error.message, stack: error.stack });
       return api.sendMessage(
         `❌ An error occurred while fetching user ID.\n\n` +
         `Error: ${error.message}`,

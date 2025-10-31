@@ -1,3 +1,5 @@
+const logger = require('../utils/logger');
+
 module.exports = {
   config: {
     name: 'userinfo',
@@ -76,7 +78,7 @@ module.exports = {
         return api.sendMessage(message, event.threadId);
 
       } catch (searchError) {
-  
+        logger.error('Error in userinfo command (search)', { error: searchError.message, stack: searchError.stack });
         return api.sendMessage(
           `❌ Error fetching user information for @${username}\n\n` +
           'This could be due to:\n' +
@@ -89,7 +91,7 @@ module.exports = {
       }
 
     } catch (error) {
-
+      logger.error('Error in userinfo command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error executing userinfo command.', event.threadId);
     }
   }

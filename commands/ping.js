@@ -1,3 +1,5 @@
+const logger = require('../utils/logger');
+
 module.exports = {
   config: {
     name: 'ping',
@@ -29,7 +31,7 @@ module.exports = {
       
       return api.sendMessage(message, event.threadId);
     } catch (error) {
-
+      logger.error('Error in ping command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error executing ping command.', event.threadId);
     }
   }

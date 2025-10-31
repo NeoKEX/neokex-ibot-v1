@@ -1,4 +1,5 @@
 const config = require('../config');
+const logger = require('../utils/logger');
 
 module.exports = {
   config: {
@@ -54,7 +55,7 @@ module.exports = {
 
       return api.sendMessage(helpText, event.threadId);
     } catch (error) {
-
+      logger.error('Error in help command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error displaying help information.', event.threadId);
     }
   }

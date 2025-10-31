@@ -1,4 +1,5 @@
 const config = require('../config');
+const logger = require('../utils/logger');
 
 module.exports = {
   config: {
@@ -47,7 +48,7 @@ module.exports = {
       
       return api.sendMessage(devText, event.threadId);
     } catch (error) {
-
+      logger.error('Error in dev command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error displaying developer panel.', event.threadId);
     }
   }

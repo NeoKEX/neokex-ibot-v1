@@ -1,4 +1,5 @@
 const config = require('../config');
+const logger = require('../utils/logger');
 
 module.exports = {
   config: {
@@ -41,7 +42,7 @@ module.exports = {
       
       return api.sendMessage(infoText, event.threadId);
     } catch (error) {
-
+      logger.error('Error in info command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error displaying bot information.', event.threadId);
     }
   }

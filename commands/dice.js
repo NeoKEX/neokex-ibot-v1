@@ -1,3 +1,5 @@
+const logger = require('../utils/logger');
+
 module.exports = {
   config: {
     name: 'dice',
@@ -30,7 +32,7 @@ module.exports = {
 
       return api.sendMessage(message, event.threadId);
     } catch (error) {
-
+      logger.error('Error in dice command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error rolling dice.', event.threadId);
     }
   }

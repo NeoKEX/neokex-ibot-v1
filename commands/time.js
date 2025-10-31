@@ -1,3 +1,5 @@
+const logger = require('../utils/logger');
+
 module.exports = {
   config: {
     name: 'time',
@@ -77,7 +79,7 @@ module.exports = {
         );
       }
     } catch (error) {
-
+      logger.error('Error in time command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error getting time information.', event.threadId);
     }
   }
