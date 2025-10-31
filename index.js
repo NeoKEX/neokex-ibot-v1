@@ -412,31 +412,40 @@ class InstagramBot {
         toDelete.forEach(id => this.processedMessages.delete(id));
       }
 
+      // Extract the full message object (nested in message.message field)
+      const fullMessage = message.message || message;
+      
       // Log raw message structure for debugging (only in debug mode)
       if (config.LOG_LEVEL === 'debug') {
         logger.debug('Raw message object:', {
-          keys: Object.keys(message),
-          hasReply: !!(message.replyToItemId || message.replied_to_item_id || message.replyTo || message.reply_to_message)
+          topLevelKeys: Object.keys(message),
+          fullMessageKeys: Object.keys(fullMessage),
+          fullMessageData: JSON.stringify(fullMessage, null, 2),
+          hasReply: !!(fullMessage.replied_to_message || fullMessage.replied_to_item_id || 
+                      fullMessage.reply_to_message || fullMessage.parent_message)
         });
       }
 
       // Transform message to event format
       const event = {
         threadId: message.threadId || message.thread_id,
-        messageId: message.itemId || message.item_id || messageId,
-        senderID: message.userId || message.user_id || message.senderId,
-        body: message.text || message.message || '',
-        timestamp: message.timestamp || Date.now(),
-        type: message.itemType || message.item_type || 'text',
-        // Include reply information - check multiple possible field names
-        replyToItemId: message.replyToItemId || message.replied_to_item_id || 
-                       message.replyTo || message.reply_to_message || 
-                       message.reply_to_item_id || null,
+        messageId: message.itemId || message.item_id || fullMessage.item_id || messageId,
+        senderID: message.userId || message.user_id || fullMessage.user_id || message.senderId,
+        body: message.text || fullMessage.text || message.message || '',
+        timestamp: message.timestamp || fullMessage.timestamp || Date.now(),
+        type: message.itemType || message.item_type || fullMessage.item_type || 'text',
+        // Include reply information - check multiple possible field names in fullMessage
+        replyToItemId: fullMessage.replied_to_message?.item_id || 
+                       fullMessage.replied_to_item_id || 
+                       fullMessage.reply_to_message?.item_id ||
+                       fullMessage.parent_message?.item_id ||
+                       message.replyToItemId || 
+                       message.replied_to_item_id || null,
         // Include additional message metadata
-        attachments: message.attachments || [],
-        isVoiceMessage: message.is_voice_message || false,
+        attachments: fullMessage.attachments || message.attachments || [],
+        isVoiceMessage: fullMessage.is_voice_message || message.is_voice_message || false,
         // Store raw message for debugging
-        _rawMessage: config.LOG_LEVEL === 'debug' ? message : undefined
+        _rawMessage: config.LOG_LEVEL === 'debug' ? fullMessage : undefined
       };
 
       // Ignore messages from self
