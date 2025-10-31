@@ -498,9 +498,10 @@ class InstagramBot {
         await this.loadCookies();
         await this.connect();
         this.setupMessageListener();
-        await this.ig.startListening(config.POLLING_INTERVAL_MS);
+        await this.ig.dm.startPolling(config.POLLING_INTERVAL_MS);
         logger.info('Reconnected successfully');
         this.isRunning = true;
+        this.reconnectAttempts = 0;
       } catch (error) {
         logger.error('Reconnection failed', { error: error.message });
         this.reconnect();
