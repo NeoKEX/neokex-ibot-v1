@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   config: {
     name: 'coinflip',
     aliases: ['flip', 'coin', 'toss'],

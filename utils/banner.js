@@ -1,5 +1,5 @@
-import logger from './logger.js';
-import config from '../config.js';
+const logger = require('./logger');
+const config = require('../config');
 
 class Banner {
   static display() {
@@ -53,4 +53,4 @@ class Banner {
   }
 }
 
-export default Banner;
+module.exports = Banner;

@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   config: {
     name: 'echo',
     aliases: ['say', 'repeat'],

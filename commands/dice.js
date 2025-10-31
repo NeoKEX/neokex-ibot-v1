@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   config: {
     name: 'dice',
     aliases: ['roll', 'd6', 'rolldice'],

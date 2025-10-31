@@ -1,9 +1,9 @@
-import config from '../config.js';
-import logger from '../utils/logger.js';
-import PermissionManager from '../utils/permissions.js';
-import Banner from '../utils/banner.js';
+const config = require('../config');
+const logger = require('../utils/logger');
+const PermissionManager = require('../utils/permissions');
+const Banner = require('../utils/banner');
 
-export default {
+module.exports = {
   config: {
     name: 'message',
     description: 'Handle incoming messages'

@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import logger from './logger.js';
+const fs = require('fs');
+const path = require('path');
+const logger = require('./logger');
 
 class ConfigManager {
   static configPath = './config.json';
@@ -140,4 +140,4 @@ class ConfigManager {
   }
 }
 
-export default ConfigManager;
+module.exports = ConfigManager;

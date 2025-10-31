@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   config: {
     name: 'userinfo',
     aliases: ['uinfo', 'profile', 'iginfo'],

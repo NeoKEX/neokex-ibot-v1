@@ -1,6 +1,6 @@
-import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
+const dotenv = require('dotenv');
+const fs = require('fs');
+const path = require('path');
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ try {
 }
 
 // Merge config.json with environment variables (env vars take priority)
-export default {
+module.exports = {
   // Bot Configuration
   PREFIX: process.env.PREFIX || configJSON.bot?.prefix || '!',
   BOT_NAME: process.env.BOT_NAME || configJSON.bot?.name || 'NeoKEX iBOT V1',

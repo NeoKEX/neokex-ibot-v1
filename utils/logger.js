@@ -1,7 +1,7 @@
-import winston from 'winston';
-import path from 'path';
-import fs from 'fs';
-import config from '../config.js';
+const winston = require('winston');
+const path = require('path');
+const fs = require('fs');
+const config = require('../config');
 
 // Ensure logs directory exists
 if (!fs.existsSync(config.LOGS_PATH)) {
@@ -106,4 +106,4 @@ logger.command = (commandName, user, success = true) => {
   });
 };
 
-export default logger;
+module.exports = logger;

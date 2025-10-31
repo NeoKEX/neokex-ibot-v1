@@ -1,8 +1,8 @@
-import config from '../config.js';
-import PermissionManager from '../utils/permissions.js';
-import ConfigManager from '../utils/configManager.js';
+const config = require('../config');
+const PermissionManager = require('../utils/permissions');
+const ConfigManager = require('../utils/configManager');
 
-export default {
+module.exports = {
   config: {
     name: 'admin',
     aliases: ['botadmin', 'admins'],

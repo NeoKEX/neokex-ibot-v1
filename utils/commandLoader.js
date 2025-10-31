@@ -1,11 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import logger from './logger.js';
-import config from '../config.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const fs = require('fs');
+const path = require('path');
+const logger = require('./logger');
+const config = require('../config');
 
 class CommandLoader {
   constructor() {
@@ -32,9 +28,9 @@ class CommandLoader {
     for (const file of commandFiles) {
       try {
         const filePath = path.join(commandsPath, file);
-        const fileUrl = `file://${filePath}`;
-        const command = await import(fileUrl + `?update=${Date.now()}`);
-        const commandModule = command.default;
+        // Clear require cache for hot reload
+        delete require.cache[require.resolve(filePath)];
+        const commandModule = require(filePath);
 
         if (!commandModule.config || !commandModule.config.name) {
           logger.warn(`Command ${file} is missing config.name, skipping`);
@@ -133,4 +129,4 @@ class CommandLoader {
   }
 }
 
-export default CommandLoader;
+module.exports = CommandLoader;

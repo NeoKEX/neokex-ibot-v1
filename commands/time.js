@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   config: {
     name: 'time',
     aliases: ['clock', 'datetime', 'worldtime'],

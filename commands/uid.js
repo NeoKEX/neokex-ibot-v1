@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   config: {
     name: 'uid',
     aliases: ['userid', 'getuid', 'id'],

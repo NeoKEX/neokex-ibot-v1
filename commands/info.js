@@ -1,6 +1,6 @@
-import config from '../config.js';
+const config = require('../config');
 
-export default {
+module.exports = {
   config: {
     name: 'info',
     aliases: ['about', 'botinfo'],

@@ -1,11 +1,11 @@
-import InstagramChatAPI from 'neokex-ica';
-import fs from 'fs';
-import config from './config.js';
-import logger from './utils/logger.js';
-import MessageQueue from './utils/messageQueue.js';
-import CommandLoader from './utils/commandLoader.js';
-import EventLoader from './utils/eventLoader.js';
-import Banner from './utils/banner.js';
+const { default: InstagramChatAPI } = require('neokex-ica');
+const fs = require('fs');
+const config = require('./config');
+const logger = require('./utils/logger');
+const MessageQueue = require('./utils/messageQueue');
+const CommandLoader = require('./utils/commandLoader');
+const EventLoader = require('./utils/eventLoader');
+const Banner = require('./utils/banner');
 
 class InstagramBot {
   constructor() {
@@ -337,6 +337,25 @@ class InstagramBot {
             }
           });
         });
+      },
+
+      unsendMessage: async (threadId, itemId) => {
+        return new Promise((resolve, reject) => {
+          self.messageQueue.add(async () => {
+            try {
+              await self.ig.dm.unsendMessage(threadId, itemId);
+              logger.debug('Message unsent', { threadId, itemId });
+              resolve();
+            } catch (error) {
+              logger.error('Failed to unsend message', {
+                error: error.message,
+                threadId,
+                itemId
+              });
+              reject(error);
+            }
+          });
+        });
       }
     };
   }
@@ -534,4 +553,4 @@ bot.start().catch(error => {
   process.exit(1);
 });
 
-export default InstagramBot;
+module.exports = InstagramBot;

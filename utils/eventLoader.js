@@ -1,11 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import logger from './logger.js';
-import config from '../config.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const fs = require('fs');
+const path = require('path');
+const logger = require('./logger');
+const config = require('../config');
 
 class EventLoader {
   constructor(bot) {
@@ -32,9 +28,9 @@ class EventLoader {
     for (const file of eventFiles) {
       try {
         const filePath = path.join(eventsPath, file);
-        const fileUrl = `file://${filePath}`;
-        const event = await import(fileUrl + `?update=${Date.now()}`);
-        const eventModule = event.default;
+        // Clear require cache for hot reload
+        delete require.cache[require.resolve(filePath)];
+        const eventModule = require(filePath);
 
         if (!eventModule.config || !eventModule.config.name) {
           logger.warn(`Event ${file} is missing config.name, skipping`);
@@ -94,4 +90,4 @@ class EventLoader {
   }
 }
 
-export default EventLoader;
+module.exports = EventLoader;

@@ -1,7 +1,7 @@
-import logger from '../utils/logger.js';
-import config from '../config.js';
+const logger = require('../utils/logger');
+const config = require('../config');
 
-export default {
+module.exports = {
   config: {
     name: 'unsend',
     aliases: ['delete', 'remove', 'del'],
@@ -41,7 +41,7 @@ export default {
 
       // Try to unsend the message
       try {
-        await bot.ig.dm.unsendMessage(event.threadId, messageIdToUnsend);
+        await api.unsendMessage(event.threadId, messageIdToUnsend);
         
         logger.info(`Message unsent: ${messageIdToUnsend} in thread ${event.threadId}`);
         

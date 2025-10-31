@@ -1,7 +1,7 @@
-import logger from '../utils/logger.js';
-import Banner from '../utils/banner.js';
+const logger = require('../utils/logger');
+const Banner = require('../utils/banner');
 
-export default {
+module.exports = {
   config: {
     name: 'ready',
     description: 'Bot is ready and connected'

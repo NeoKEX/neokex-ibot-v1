@@ -1,6 +1,6 @@
-import logger from '../utils/logger.js';
+const logger = require('../utils/logger');
 
-export default {
+module.exports = {
   config: {
     name: 'error',
     description: 'Handle bot errors'

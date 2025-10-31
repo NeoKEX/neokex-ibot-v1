@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   config: {
     name: 'joke',
     aliases: ['j', 'funny', 'laugh'],

@@ -1,6 +1,6 @@
-import config from '../config.js';
-import ConfigManager from './configManager.js';
-import logger from './logger.js';
+const config = require('../config');
+const ConfigManager = require('./configManager');
+const logger = require('./logger');
 
 /**
  * Role System:
@@ -104,4 +104,4 @@ class PermissionManager {
   }
 }
 
-export default PermissionManager;
+module.exports = PermissionManager;
