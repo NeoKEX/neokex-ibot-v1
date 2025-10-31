@@ -18,14 +18,14 @@ module.exports = {
 
       // No arguments - Show admin panel
       if (args.length === 0) {
-        return this.showAdminPanel(api, event, bot, senderRole);
+        return this.showAdminPanel(api, event, bot, senderRole, config, PermissionManager, ConfigManager);
       }
 
       const action = args[0].toLowerCase();
 
       // List admins
       if (action === 'list' || action === 'show') {
-        return this.listAdmins(api, event);
+        return this.listAdmins(api, event, ConfigManager);
       }
 
       // Add admin (requires admin or developer role)
@@ -39,7 +39,7 @@ module.exports = {
         }
 
         const userIdToAdd = args[1];
-        return this.addAdmin(api, event, userIdToAdd, bot);
+        return this.addAdmin(api, event, userIdToAdd, bot, ConfigManager);
       }
 
       // Remove admin (requires developer role only for safety)
@@ -53,7 +53,7 @@ module.exports = {
         }
 
         const userIdToRemove = args[1];
-        return this.removeAdmin(api, event, userIdToRemove, bot);
+        return this.removeAdmin(api, event, userIdToRemove, bot, ConfigManager);
       }
 
       // Invalid action
@@ -73,7 +73,7 @@ module.exports = {
     }
   },
 
-  async showAdminPanel(api, event, bot, senderRole) {
+  async showAdminPanel(api, event, bot, senderRole, config, PermissionManager, ConfigManager) {
     const roleName = PermissionManager.getRoleName(senderRole);
     const admins = ConfigManager.getAdmins();
     const developer = ConfigManager.getDeveloper();
@@ -114,7 +114,7 @@ module.exports = {
     return api.sendMessage(adminText, event.threadId);
   },
 
-  async listAdmins(api, event) {
+  async listAdmins(api, event, ConfigManager) {
     const admins = ConfigManager.getAdmins();
     const developer = ConfigManager.getDeveloper();
 
@@ -138,7 +138,7 @@ module.exports = {
     return api.sendMessage(message, event.threadId);
   },
 
-  async addAdmin(api, event, userIdToAdd, bot) {
+  async addAdmin(api, event, userIdToAdd, bot, ConfigManager) {
     // Check if already admin
     if (ConfigManager.isAdmin(userIdToAdd)) {
       return api.sendMessage(`❌ User ${userIdToAdd} is already an admin!`, event.threadId);
@@ -212,7 +212,7 @@ module.exports = {
     }
   },
 
-  async removeAdmin(api, event, userIdToRemove, bot) {
+  async removeAdmin(api, event, userIdToRemove, bot, ConfigManager) {
     // Check if user is admin
     if (!ConfigManager.isAdmin(userIdToRemove)) {
       return api.sendMessage(`❌ User ${userIdToRemove} is not an admin!`, event.threadId);

@@ -11,6 +11,10 @@ This is a highly advanced Instagram bot built with Node.js and the neokex-ica ch
   - **Message Visibility Fixed**: Messages now show immediately in chat
     - Increased post-send delay to 2000ms to ensure Instagram processes messages
     - No more need to refresh chat to see bot responses
+  - **Persistent Message Tracking**: Processed messages now stored in database
+    - Messages won't be re-processed after bot restarts
+    - Up to 5 minutes of message history tracked
+    - Automatic cleanup of old processed messages
   - **Prefix Command Behavior**: Proper separation of info display vs. command execution
     - Type `prefix` (without prefix) → Shows current global and thread prefix info
     - Type `!prefix` (with prefix) → Shows usage instructions
