@@ -5,10 +5,11 @@ module.exports = {
     name: 'ai',
     aliases: ['gpt', 'ask', 'chatgpt'],
     description: 'Ask AI anything (requires OPENAI_API_KEY)',
-    usage: 'ai <question>\n\nExamples:\n  ai What is the meaning of life?\n  ai Write a short poem about coding',
+    usage: 'ai <question>',
     cooldown: 10,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'ai'
   },
 
   async run({ api, event, args, logger }) {

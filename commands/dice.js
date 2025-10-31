@@ -3,10 +3,11 @@ module.exports = {
     name: 'dice',
     aliases: ['roll', 'd6', 'rolldice'],
     description: 'Roll a dice (1-6) or custom sided dice',
-    usage: 'dice [sides]\n\nExamples:\n  dice - Roll standard 6-sided dice\n  dice 20 - Roll 20-sided dice\n  dice 100 - Roll 100-sided dice',
+    usage: 'dice [sides]',
     cooldown: 2,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'game'
   },
 
   async run({ api, event, args, logger }) {

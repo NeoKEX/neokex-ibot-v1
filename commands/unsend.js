@@ -3,10 +3,11 @@ module.exports = {
     name: 'unsend',
     aliases: ['delete', 'remove', 'del'],
     description: 'Unsend a message (reply to the message you want to unsend)',
-    usage: 'unsend\n\nReply to a message with this command to unsend it.',
+    usage: 'unsend',
     cooldown: 3,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'admin'
   },
 
   async run({ api, event, bot, logger, config }) {

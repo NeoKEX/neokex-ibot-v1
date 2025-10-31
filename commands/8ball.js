@@ -3,10 +3,11 @@ module.exports = {
     name: '8ball',
     aliases: ['magic8ball', 'eightball', 'fortune'],
     description: 'Ask the magic 8-ball a yes/no question',
-    usage: '8ball <question>\n\nExamples:\n  8ball Will it rain today?\n  8ball Should I study programming?',
+    usage: '8ball <question>',
     cooldown: 3,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'fun'
   },
 
   async run({ api, event, args, logger }) {

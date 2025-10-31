@@ -1,56 +1,116 @@
+const fs = require("fs-extra");
+const path = require("path");
+
 module.exports = {
   config: {
     name: 'help',
-    aliases: ['h', 'commands'],
+    aliases: ['h', 'commands', 'menu'],
     description: 'Show all available commands',
     usage: 'help [command]',
     cooldown: 3,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'system'
   },
 
   async run({ api, event, args, bot, logger, config }) {
     try {
       const { commandLoader } = bot;
       const prefix = config.PREFIX;
+      const allCommands = commandLoader.commands;
+      const categories = {};
 
+      const emojiMap = {
+        system: "⚙️",
+        fun: "🎮",
+        utility: "🛠️",
+        admin: "👑",
+        info: "ℹ️",
+        game: "🎲",
+        tools: "🔧",
+        moderation: "🛡️",
+        entertainment: "🎭",
+        others: "📦"
+      };
+
+      const cleanCategoryName = (text) => {
+        if (!text) return "others";
+        return text
+          .normalize("NFKD")
+          .replace(/[^\w\s-]/g, "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .toLowerCase();
+      };
+
+      // Group commands by category
+      const uniqueCommands = new Set();
+      for (const [name, cmd] of allCommands) {
+        // Only add main command name, not aliases
+        if (cmd.config.name === name) {
+          const cat = cleanCategoryName(cmd.config.category);
+          if (!categories[cat]) categories[cat] = [];
+          categories[cat].push(cmd.config.name);
+          uniqueCommands.add(cmd.config.name);
+        }
+      }
+
+      // Single command detail
       if (args.length > 0) {
-        // Show help for specific command
-        const commandName = args[0].toLowerCase();
-        const command = commandLoader.getCommand(commandName);
+        const query = args[0].toLowerCase();
+        const command = commandLoader.getCommand(query);
 
         if (!command) {
-          return api.sendMessage(`Command "${commandName}" not found.`, event.threadId);
+          return api.sendMessage(`❌ Command "${query}" not found.`, event.threadId);
         }
 
-        let helpText = `📖 Command: ${command.config.name}\n`;
-        helpText += `Description: ${command.config.description || 'No description'}\n`;
-        helpText += `Usage: ${prefix}${command.config.usage || command.config.name}\n`;
-        
-        if (command.config.aliases && command.config.aliases.length > 0) {
-          helpText += `Aliases: ${command.config.aliases.join(', ')}\n`;
-        }
-        
-        helpText += `Cooldown: ${command.config.cooldown || 0}s`;
+        const {
+          name,
+          author,
+          usage,
+          category,
+          description,
+          aliases,
+          cooldown,
+          role
+        } = command.config;
+
+        const roleNames = ['Everyone', 'Admin', 'Moderator', 'Developer'];
+        const roleName = roleNames[role] || 'Everyone';
+
+        let helpText = `☠️ 𝗖𝗢𝗠𝗠𝗔𝗡𝗗 𝗜𝗡𝗙𝗢 ☠️\n\n`;
+        helpText += `➥ Name: ${name}\n`;
+        helpText += `➥ Category: ${category || 'Uncategorized'}\n`;
+        helpText += `➥ Description: ${description || 'No description'}\n`;
+        helpText += `➥ Aliases: ${aliases?.length ? aliases.join(', ') : 'None'}\n`;
+        helpText += `➥ Usage: ${prefix}${usage || name}\n`;
+        helpText += `➥ Cooldown: ${cooldown || 0}s\n`;
+        helpText += `➥ Required Role: ${roleName}\n`;
+        helpText += `➥ Author: ${author || 'Unknown'}`;
 
         return api.sendMessage(helpText, event.threadId);
       }
 
-      // Show all commands
-      const commandNames = commandLoader.getAllCommandNames();
-      
-      let helpText = `📚 ${config.BOT_NAME} - Available Commands\n\n`;
-      helpText += `Prefix: ${prefix}\n`;
-      helpText += `Total Commands: ${commandNames.length}\n\n`;
-      
-      commandNames.forEach(name => {
-        const cmd = commandLoader.getCommand(name);
-        helpText += `${prefix}${name} - ${cmd.config.description || 'No description'}\n`;
-      });
-      
-      helpText += `\nUse ${prefix}help <command> for detailed info`;
+      // Format all commands
+      const formatCommands = (cmds) =>
+        cmds.sort().map((cmd) => `│ ∘ ${cmd}`).join("\n");
 
-      return api.sendMessage(helpText, event.threadId);
+      let msg = `╭━ 🎯 𝑪𝑶𝑴𝑴𝑨𝑵𝑫𝑺 ━╮\n`;
+      msg += `│ Bot: ${config.BOT_NAME}\n`;
+      msg += `│ Prefix: ${prefix}\n`;
+      msg += `│ Total: ${uniqueCommands.size} commands\n`;
+      
+      const sortedCategories = Object.keys(categories).sort();
+      for (const cat of sortedCategories) {
+        const emoji = emojiMap[cat] || "➥";
+        msg += `\n${emoji} ${cat.toUpperCase()}\n`;
+        msg += `${formatCommands(categories[cat])}\n`;
+      }
+      
+      msg += `\n╰➤ Use: ${prefix}help [command] for details`;
+
+      return api.sendMessage(msg, event.threadId);
+
     } catch (error) {
       logger.error('Error in help command', { error: error.message, stack: error.stack });
       return api.sendMessage('Error displaying help information.', event.threadId);

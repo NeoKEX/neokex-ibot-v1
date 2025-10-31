@@ -3,10 +3,11 @@ module.exports = {
     name: 'calc',
     aliases: ['calculate', 'math'],
     description: 'Calculate mathematical expressions',
-    usage: 'calc <expression>\n\nExamples:\n  calc 2 + 2\n  calc 10 * 5\n  calc (100 - 25) / 5',
+    usage: 'calc <expression>',
     cooldown: 3,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'utility'
   },
 
   async run({ api, event, args, logger }) {

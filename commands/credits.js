@@ -6,7 +6,8 @@ module.exports = {
     usage: 'credits',
     cooldown: 5,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'system'
   },
 
   async run({ api, event, logger, config }) {

@@ -6,7 +6,8 @@ module.exports = {
     usage: 'dev',
     cooldown: 0,
     role: 3,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'system'
   },
 
   async run({ api, event, bot, logger, config }) {

@@ -3,10 +3,11 @@ module.exports = {
     name: 'stats',
     aliases: ['statistics', 'botstats', 'botinfo'],
     description: 'View bot statistics and user info',
-    usage: 'stats [user]\n\nExamples:\n  stats - View your stats\n  stats @user - View another user\'s stats (admin only)',
+    usage: 'stats [user]',
     cooldown: 5,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'info'
   },
 
   async run({ api, event, bot, logger, database, config }) {

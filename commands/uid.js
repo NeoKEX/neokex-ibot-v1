@@ -3,10 +3,11 @@ module.exports = {
     name: 'uid',
     aliases: ['userid', 'getuid', 'id'],
     description: 'Get Instagram User ID from username',
-    usage: 'uid [username]\n\nExamples:\n  uid - Get your own UID\n  uid instagram - Get UID of @instagram',
+    usage: 'uid [username]',
     cooldown: 5,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'utility'
   },
 
   async run({ api, event, args, bot, logger }) {

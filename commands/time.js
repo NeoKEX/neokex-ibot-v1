@@ -3,10 +3,11 @@ module.exports = {
     name: 'time',
     aliases: ['clock', 'datetime', 'worldtime'],
     description: 'Get current time in different timezones',
-    usage: 'time [timezone]\n\nExamples:\n  time - Current server time\n  time UTC\n  time America/New_York\n  time Asia/Tokyo',
+    usage: 'time [timezone]',
     cooldown: 3,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'utility'
   },
 
   async run({ api, event, args, logger }) {

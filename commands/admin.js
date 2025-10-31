@@ -3,10 +3,11 @@ module.exports = {
     name: 'admin',
     aliases: ['botadmin', 'admins'],
     description: 'Admin panel - Manage bot administrators',
-    usage: 'admin [add|remove|list] [user_id]\n\nExamples:\n  admin - View admin panel\n  admin list - List all admins\n  admin add 123456789 - Add admin\n  admin remove 123456789 - Remove admin',
+    usage: 'admin [add|remove|list] [user_id]',
     cooldown: 5,
     role: 1,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'admin'
   },
 
   async run({ api, event, args, bot, logger, config, PermissionManager, ConfigManager }) {

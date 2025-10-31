@@ -3,10 +3,11 @@ module.exports = {
     name: 'choose',
     aliases: ['pick', 'select', 'random'],
     description: 'Randomly choose from given options',
-    usage: 'choose <option1> | <option2> | <option3>...\n\nExamples:\n  choose pizza | burger | pasta\n  choose yes | no\n  choose red | blue | green | yellow',
+    usage: 'choose <option1> | <option2> | <option3>',
     cooldown: 3,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'fun'
   },
 
   async run({ api, event, args, logger }) {

@@ -3,10 +3,11 @@ module.exports = {
     name: 'manage',
     aliases: ['autoresponse', 'trigger'],
     description: 'Manage auto-responses (Admin only)',
-    usage: 'manage <add|remove|list> [trigger] [response]\n\nExamples:\n  manage list\n  manage add hello Hi there!\n  manage remove <id>',
+    usage: 'manage <add|remove|list> [trigger] [response]',
     cooldown: 5,
     role: 1,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'admin'
   },
 
   async run({ api, event, args, logger, database }) {

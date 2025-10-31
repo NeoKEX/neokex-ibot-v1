@@ -6,7 +6,8 @@ module.exports = {
     usage: 'ping',
     cooldown: 5,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'system'
   },
 
   async run({ api, event, bot, logger }) {

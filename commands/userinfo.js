@@ -3,10 +3,11 @@ module.exports = {
     name: 'userinfo',
     aliases: ['uinfo', 'profile', 'iginfo'],
     description: 'Get detailed Instagram user information',
-    usage: 'userinfo <username>\n\nExamples:\n  userinfo instagram\n  userinfo cristiano',
+    usage: 'userinfo <username>',
     cooldown: 10,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'utility'
   },
 
   async run({ api, event, args, bot, logger }) {

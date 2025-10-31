@@ -3,10 +3,11 @@ module.exports = {
     name: 'rps',
     aliases: ['rockpaperscissors', 'rock'],
     description: 'Play Rock Paper Scissors with the bot',
-    usage: 'rps <rock|paper|scissors>\n\nExamples:\n  rps rock\n  rps paper\n  rps scissors',
+    usage: 'rps <rock|paper|scissors>',
     cooldown: 2,
     role: 0,
-    author: 'NeoKEX'
+    author: 'NeoKEX',
+    category: 'game'
   },
 
   async run({ api, event, args, logger }) {
