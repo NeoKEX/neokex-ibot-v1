@@ -52,7 +52,7 @@ class InstagramBot {
       await this.eventLoader.handleEvent('ready', {});
 
       // Start listening for messages
-      await this.ig.startListening(config.POLLING_INTERVAL_MS);
+      await this.ig.dm.startPolling(config.POLLING_INTERVAL_MS);
       logger.info(`Started polling for messages (interval: ${config.POLLING_INTERVAL_MS}ms)`);
 
       // Keep the process alive
@@ -118,9 +118,8 @@ class InstagramBot {
 
       // Get current user info to verify authentication
       try {
-        const userInfo = await this.ig.getCurrentUser();
-        this.userID = userInfo.pk || userInfo.id;
-        this.username = userInfo.username;
+        this.userID = this.ig.getCurrentUserID();
+        this.username = this.ig.getCurrentUsername();
         logger.info('Successfully authenticated with Instagram', {
           userID: this.userID,
           username: this.username
@@ -159,7 +158,7 @@ class InstagramBot {
         return new Promise((resolve, reject) => {
           self.messageQueue.add(async () => {
             try {
-              const result = await self.ig.sendMessage(threadId, text);
+              const result = await self.ig.dm.sendMessage(threadId, text);
               logger.debug('Message sent', { threadId, messageLength: text.length });
               resolve(result);
             } catch (error) {
@@ -177,7 +176,7 @@ class InstagramBot {
         return new Promise((resolve, reject) => {
           self.messageQueue.add(async () => {
             try {
-              const result = await self.ig.sendMessageToUser(userId, text);
+              const result = await self.ig.dm.sendMessageToUser(userId, text);
               logger.debug('Direct message sent to user', { userId, messageLength: text.length });
               resolve(result);
             } catch (error) {
@@ -193,7 +192,7 @@ class InstagramBot {
 
       getThread: async (threadId) => {
         try {
-          const thread = await self.ig.getThread(threadId);
+          const thread = await self.ig.dm.getThread(threadId);
           return thread;
         } catch (error) {
           logger.error('Failed to get thread', {
@@ -218,7 +217,7 @@ class InstagramBot {
 
       markAsSeen: async (threadId, itemId) => {
         try {
-          await self.ig.markAsSeen(threadId, itemId);
+          await self.ig.dm.markAsSeen(threadId, itemId);
           logger.debug('Message marked as seen', { threadId, itemId });
         } catch (error) {
           logger.error('Failed to mark as seen', {
@@ -233,7 +232,7 @@ class InstagramBot {
         return new Promise((resolve, reject) => {
           self.messageQueue.add(async () => {
             try {
-              const result = await self.ig.sendPhoto(threadId, photoPath, caption);
+              const result = await self.ig.dm.sendPhoto(threadId, photoPath);
               logger.debug('Photo sent', { threadId, photoPath });
               Banner.success(`Photo sent to thread ${threadId}`);
               resolve(result);
@@ -254,7 +253,7 @@ class InstagramBot {
         return new Promise((resolve, reject) => {
           self.messageQueue.add(async () => {
             try {
-              const result = await self.ig.sendVideo(threadId, videoPath, caption);
+              const result = await self.ig.dm.sendVideo(threadId, videoPath);
               logger.debug('Video sent', { threadId, videoPath });
               Banner.success(`Video sent to thread ${threadId}`);
               resolve(result);
@@ -275,7 +274,7 @@ class InstagramBot {
         return new Promise((resolve, reject) => {
           self.messageQueue.add(async () => {
             try {
-              const result = await self.ig.sendVoiceNote(threadId, audioPath);
+              const result = await self.ig.dm.sendVoiceNote(threadId, audioPath);
               logger.debug('Audio sent', { threadId, audioPath });
               Banner.success(`Audio sent to thread ${threadId}`);
               resolve(result);
@@ -300,7 +299,7 @@ class InstagramBot {
   setupMessageListener() {
     logger.info('Setting up message listener...');
 
-    this.ig.onMessage(async (message) => {
+    this.ig.on('message', async (message) => {
       try {
         await this.handleMessage(message);
       } catch (error) {
