@@ -1,4 +1,5 @@
 import config from '../config.js';
+import ConfigManager from './configManager.js';
 import logger from './logger.js';
 
 /**
@@ -26,19 +27,23 @@ class PermissionManager {
       return true;
     }
 
+    // Get fresh config data from config.json
+    const admins = ConfigManager.getAdmins();
+    const developer = ConfigManager.getDeveloper();
+
     // Role 3: Bot Developer
     if (requiredRole === 3) {
-      return userId === config.DEVELOPER_ID;
+      return userId === developer;
     }
 
     // If user is developer, they have access to everything
-    if (userId === config.DEVELOPER_ID) {
+    if (userId === developer) {
       return true;
     }
 
     // Role 1 & 2: Bot Admins (Role 2 = Role 1 for Instagram)
     if (requiredRole === 1 || requiredRole === 2) {
-      return config.BOT_ADMINS.includes(userId);
+      return admins.includes(userId);
     }
 
     return false;
@@ -66,11 +71,15 @@ class PermissionManager {
    * @returns {number} Highest role number
    */
   static getUserRole(userId, threadInfo = null) {
-    if (userId === config.DEVELOPER_ID) {
+    // Get fresh config data from config.json
+    const admins = ConfigManager.getAdmins();
+    const developer = ConfigManager.getDeveloper();
+
+    if (userId === developer) {
       return 3;
     }
 
-    if (config.BOT_ADMINS.includes(userId)) {
+    if (admins.includes(userId)) {
       return 1;
     }
 
