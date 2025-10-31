@@ -25,7 +25,7 @@ module.exports = {
 
       // List admins
       if (action === 'list' || action === 'show') {
-        return this.listAdmins(api, event, ConfigManager);
+        return this.listAdmins(api, event, config, PermissionManager, ConfigManager);
       }
 
       // Add admin (requires admin or developer role)
@@ -39,7 +39,7 @@ module.exports = {
         }
 
         const userIdToAdd = args[1];
-        return this.addAdmin(api, event, userIdToAdd, bot, ConfigManager);
+        return this.addAdmin(api, event, userIdToAdd, bot, config, PermissionManager, ConfigManager);
       }
 
       // Remove admin (requires developer role only for safety)
@@ -53,7 +53,7 @@ module.exports = {
         }
 
         const userIdToRemove = args[1];
-        return this.removeAdmin(api, event, userIdToRemove, bot, ConfigManager);
+        return this.removeAdmin(api, event, userIdToRemove, bot, config, PermissionManager, ConfigManager);
       }
 
       // Invalid action
@@ -114,7 +114,7 @@ module.exports = {
     return api.sendMessage(adminText, event.threadId);
   },
 
-  async listAdmins(api, event, ConfigManager) {
+  async listAdmins(api, event, config, PermissionManager, ConfigManager) {
     const admins = ConfigManager.getAdmins();
     const developer = ConfigManager.getDeveloper();
 
@@ -138,7 +138,7 @@ module.exports = {
     return api.sendMessage(message, event.threadId);
   },
 
-  async addAdmin(api, event, userIdToAdd, bot, ConfigManager) {
+  async addAdmin(api, event, userIdToAdd, bot, config, PermissionManager, ConfigManager) {
     // Check if already admin
     if (ConfigManager.isAdmin(userIdToAdd)) {
       return api.sendMessage(`❌ User ${userIdToAdd} is already an admin!`, event.threadId);
@@ -212,7 +212,7 @@ module.exports = {
     }
   },
 
-  async removeAdmin(api, event, userIdToRemove, bot, ConfigManager) {
+  async removeAdmin(api, event, userIdToRemove, bot, config, PermissionManager, ConfigManager) {
     // Check if user is admin
     if (!ConfigManager.isAdmin(userIdToRemove)) {
       return api.sendMessage(`❌ User ${userIdToRemove} is not an admin!`, event.threadId);
