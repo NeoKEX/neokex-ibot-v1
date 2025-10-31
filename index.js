@@ -211,7 +211,7 @@ class InstagramBot {
           
           // Increased delay to ensure Instagram processes the message and makes it visible
           // Instagram needs more time to sync messages across devices/UI
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise(resolve => setTimeout(resolve, 3000));
           
           logger.debug('Message sent', { threadId, messageLength: text.length });
           return result;
@@ -241,7 +241,7 @@ class InstagramBot {
           const result = await self.ig.dm.sendMessageToUser(userId, text);
           
           // Delay to ensure Instagram processes the message
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise(resolve => setTimeout(resolve, 3000));
           
           logger.debug('Direct message sent', { userId, messageLength: text.length });
           return result;
@@ -309,7 +309,7 @@ class InstagramBot {
           const result = await self.ig.dm.sendPhoto(threadId, photoPath);
           
           // Delay to ensure Instagram processes the message
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise(resolve => setTimeout(resolve, 3000));
           
           logger.debug('Photo sent', { threadId, photoPath });
           Banner.success(`Photo sent to thread ${threadId}`);
@@ -330,7 +330,7 @@ class InstagramBot {
           const result = await self.ig.dm.sendVideo(threadId, videoPath);
           
           // Delay to ensure Instagram processes the message
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise(resolve => setTimeout(resolve, 3000));
           
           logger.debug('Video sent', { threadId, videoPath });
           Banner.success(`Video sent to thread ${threadId}`);
@@ -351,7 +351,7 @@ class InstagramBot {
           const result = await self.ig.dm.sendVoiceNote(threadId, audioPath);
           
           // Delay to ensure Instagram processes the message
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise(resolve => setTimeout(resolve, 3000));
           
           logger.debug('Audio sent', { threadId, audioPath });
           Banner.success(`Audio sent to thread ${threadId}`);
