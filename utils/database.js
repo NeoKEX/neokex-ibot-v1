@@ -16,7 +16,8 @@ class Database {
       welcomedUsers: new Set(),
       bannedUsers: new Set(),
       spamWarnings: {},
-      lastMessages: {}
+      lastMessages: {},
+      sentMessages: {}
     };
     this.ensureDataDirectory();
     this.load();
@@ -49,7 +50,8 @@ class Database {
           welcomedUsers: new Set(parsed.welcomedUsers || []),
           bannedUsers: new Set(parsed.bannedUsers || []),
           spamWarnings: parsed.spamWarnings || {},
-          lastMessages: parsed.lastMessages || {}
+          lastMessages: parsed.lastMessages || {},
+          sentMessages: parsed.sentMessages || {}
         };
         
         logger.info('Database loaded successfully');
@@ -69,7 +71,8 @@ class Database {
         welcomedUsers: new Set(),
         bannedUsers: new Set(),
         spamWarnings: {},
-        lastMessages: {}
+        lastMessages: {},
+        sentMessages: {}
       };
     }
   }
@@ -330,6 +333,75 @@ class Database {
       return true;
     }
     return false;
+  }
+
+  // Sent message tracking (for unsend functionality)
+  storeSentMessage(threadId, itemId) {
+    if (!this.data.sentMessages[threadId]) {
+      this.data.sentMessages[threadId] = [];
+    }
+    
+    this.data.sentMessages[threadId].push({
+      itemId: itemId,
+      timestamp: Date.now()
+    });
+    
+    // Keep only last 50 messages per thread
+    if (this.data.sentMessages[threadId].length > 50) {
+      this.data.sentMessages[threadId].shift();
+    }
+    
+    logger.debug('Stored sent message', { threadId, itemId });
+  }
+
+  getLastSentMessage(threadId) {
+    if (!this.data.sentMessages[threadId] || this.data.sentMessages[threadId].length === 0) {
+      return null;
+    }
+    
+    const messages = this.data.sentMessages[threadId];
+    const lastMessage = messages[messages.length - 1];
+    
+    return {
+      itemId: lastMessage.itemId,
+      threadId: threadId,
+      timestamp: lastMessage.timestamp
+    };
+  }
+
+  removeSentMessage(threadId, itemId) {
+    if (!this.data.sentMessages[threadId]) {
+      return false;
+    }
+    
+    const index = this.data.sentMessages[threadId].findIndex(msg => msg.itemId === itemId);
+    if (index > -1) {
+      this.data.sentMessages[threadId].splice(index, 1);
+      logger.debug('Removed sent message from storage', { threadId, itemId });
+      return true;
+    }
+    
+    return false;
+  }
+
+  getAllSentMessages(threadId) {
+    return this.data.sentMessages[threadId] || [];
+  }
+
+  clearOldSentMessages() {
+    const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+    
+    Object.keys(this.data.sentMessages).forEach(threadId => {
+      this.data.sentMessages[threadId] = this.data.sentMessages[threadId].filter(
+        msg => msg.timestamp > sevenDaysAgo
+      );
+      
+      if (this.data.sentMessages[threadId].length === 0) {
+        delete this.data.sentMessages[threadId];
+      }
+    });
+    
+    logger.debug('Cleared old sent messages');
   }
 }
 

@@ -20,22 +20,29 @@ module.exports = {
         });
       }
 
-      // Check if this is a reply to a message
-      if (!event.replyToItemId) {
-        // Provide more helpful error message
-        const debugInfo = config.LOG_LEVEL === 'debug' 
-          ? `\n\nDebug: Available fields: ${Object.keys(event).join(', ')}`
-          : '';
-        
-        return api.sendMessage(
-          '❌ Please reply to the message you want to unsend!\n\n' +
-          'Usage: Reply to any message and type !unsend' +
-          debugInfo,
-          event.threadId
-        );
-      }
+      let messageIdToUnsend;
 
-      const messageIdToUnsend = event.replyToItemId;
+      // If this is a reply to a message, unsend that message
+      if (event.replyToItemId) {
+        messageIdToUnsend = event.replyToItemId;
+        logger.debug('Unsending replied message', { itemId: messageIdToUnsend });
+      } else {
+        // Otherwise, try to unsend the last message sent by the bot in this thread
+        const lastMessage = api.getLastSentMessage(event.threadId);
+        
+        if (!lastMessage) {
+          return api.sendMessage(
+            '❌ No message to unsend!\n\n' +
+            'Usage:\n' +
+            '• Reply to a bot message and type unsend to delete it\n' +
+            '• Type unsend to delete the bot\'s last message in this chat',
+            event.threadId
+          );
+        }
+        
+        messageIdToUnsend = lastMessage.itemId;
+        logger.debug('Unsending last bot message', { itemId: messageIdToUnsend });
+      }
 
       // Try to unsend the message
       try {
@@ -67,7 +74,7 @@ module.exports = {
       }
     } catch (error) {
       logger.error(`Error in unsend command: ${error.message}`);
-      return api.sendMessage('Error executing unsend command.', event.threadId);
+      return api.sendMessage('❌ Error executing unsend command.', event.threadId);
     }
   }
 };

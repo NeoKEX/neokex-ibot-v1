@@ -206,15 +206,15 @@ class InstagramBot {
         return new Promise((resolve, reject) => {
           self.messageQueue.add(async () => {
             try {
-              // Add small delay before sending (human-like behavior)
-              await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
-              
               const result = await self.ig.dm.sendMessage(threadId, text);
               
-              // Add small delay after sending to confirm delivery
-              await new Promise(resolve => setTimeout(resolve, 300));
+              // Store the message ID for potential unsend operations (persistent storage)
+              if (result && result.item_id) {
+                const database = require('./utils/database');
+                database.storeSentMessage(threadId, result.item_id);
+              }
               
-              logger.debug('Message sent and confirmed', { threadId, messageLength: text.length });
+              logger.debug('Message sent', { threadId, messageLength: text.length });
               resolve(result);
             } catch (error) {
               const errorMsg = error.message || '';
@@ -243,15 +243,9 @@ class InstagramBot {
         return new Promise((resolve, reject) => {
           self.messageQueue.add(async () => {
             try {
-              // Add small delay before sending (human-like behavior)
-              await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
-              
               const result = await self.ig.dm.sendMessageToUser(userId, text);
               
-              // Add small delay after sending to confirm delivery
-              await new Promise(resolve => setTimeout(resolve, 300));
-              
-              logger.debug('Direct message sent and confirmed', { userId, messageLength: text.length });
+              logger.debug('Direct message sent', { userId, messageLength: text.length });
               resolve(result);
             } catch (error) {
               const errorMsg = error.message || '';
@@ -383,6 +377,11 @@ class InstagramBot {
             try {
               await self.ig.dm.unsendMessage(threadId, itemId);
               logger.debug('Message unsent', { threadId, itemId });
+              
+              // Remove from persistent storage
+              const database = require('./utils/database');
+              database.removeSentMessage(threadId, itemId);
+              
               resolve();
             } catch (error) {
               logger.error('Failed to unsend message', {
@@ -394,6 +393,11 @@ class InstagramBot {
             }
           });
         });
+      },
+      
+      getLastSentMessage: (threadId) => {
+        const database = require('./utils/database');
+        return database.getLastSentMessage(threadId);
       }
     };
   }
@@ -494,15 +498,6 @@ class InstagramBot {
 
       // Handle message event
       await this.eventLoader.handleEvent('message', event);
-
-      // Auto mark as seen if configured
-      if (event.messageId && event.threadId) {
-        try {
-          await this.api.markAsSeen(event.threadId, event.messageId);
-        } catch (error) {
-          logger.debug('Could not mark message as seen', { error: error.message });
-        }
-      }
     } catch (error) {
       logger.error('Error in handleMessage', {
         error: error.message,

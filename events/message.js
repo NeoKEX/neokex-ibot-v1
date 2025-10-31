@@ -63,6 +63,53 @@ module.exports = {
       const threadData = database.getThreadData(event.threadId);
       const prefix = threadData?.prefix || config.PREFIX;
 
+      // Check for commands that work without prefix (e.g., "prefix")
+      const bodyLower = event.body.toLowerCase().trim();
+      const wordsInMessage = bodyLower.split(/\s+/);
+      const firstWord = wordsInMessage[0];
+      
+      // Allow "prefix" command to work without prefix
+      if (firstWord === 'prefix' && !event.body.startsWith(prefix)) {
+        const command = commandLoader.getCommand('prefix');
+        
+        if (command) {
+          // Remove the command name and get arguments
+          const args = event.body.slice('prefix'.length).trim().split(/ +/);
+          
+          try {
+            Banner.commandExecuted(command.config.name, event.senderID, true);
+            
+            // Track command usage
+            user.commandCount++;
+            database.updateUser(event.senderID, user);
+            database.incrementStat('totalCommands');
+            
+            await command.run({
+              api,
+              event,
+              args,
+              bot,
+              commandName: command.config.name,
+              logger,
+              database,
+              config,
+              PermissionManager,
+              ConfigManager
+            });
+          } catch (error) {
+            logger.error(`Command error: ${command.config.name}`, {
+              error: error.message
+            });
+            Banner.commandExecuted(command.config.name, event.senderID, false);
+            api.sendMessage(
+              `❌ Error executing command: ${error.message}`,
+              event.threadId
+            );
+          }
+          return;
+        }
+      }
+
       // Check if message is a command
       if (event.body.startsWith(prefix)) {
         const args = event.body.slice(prefix.length).trim().split(/ +/);
