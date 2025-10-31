@@ -124,14 +124,31 @@ node index.js
 ## 📚 Built-in Commands
 
 ### General Commands (Role 0 - All Users)
+
+#### Information & Utility
 - `!help [command]` - Show all available commands or get help for specific command
 - `!ping` - Check bot response time and uptime
 - `!info` - Show comprehensive bot information
-- `!echo <message>` - Repeat your message
 - `!credits` - Show bot credits and author information
 
+#### Instagram Features
+- `!uid [username]` - Get Instagram User ID from username
+- `!userinfo <username>` - Get detailed Instagram user information and statistics
+
+#### Fun & Entertainment
+- `!quote` - Get a random inspirational quote
+- `!joke` - Get a random joke to lighten the mood
+- `!echo <message>` - Repeat your message
+
+#### Utilities
+- `!calc <expression>` - Calculate mathematical expressions
+- `!time [timezone]` - Get current time in different timezones
+- `!coinflip` - Flip a coin (Heads or Tails)
+- `!dice [sides]` - Roll a dice (default 6-sided, or custom)
+- `!choose <option1> | <option2> | ...` - Randomly choose from given options
+
 ### Admin Commands (Role 1 - Bot Admins)
-- `!admin` - View admin panel and bot statistics
+- `!admin [add|remove|list] [user_id]` - Manage bot administrators
 
 ### Developer Commands (Role 3 - Bot Developer)
 - `!dev` - Access developer control panel with system information
