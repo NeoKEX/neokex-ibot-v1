@@ -4,7 +4,16 @@
 This is a highly advanced Instagram bot built with Node.js and the neokex-ica chat API. The bot is designed to handle Instagram messages, commands, and events similar to GoatbotV2's architecture.
 
 ## Recent Changes
-- **2025-10-31 (Latest)**: Fixed Message Processing Errors & Instagram API Limitation Documented
+- **2025-10-31 (Latest)**: Improved Message Visibility with Typing Indicator
+  - **NEW FEATURE - Typing Indicator Before Messages**: Bot now sends typing indicator before every message
+    - Shows "..." indicator to user, signaling bot is about to respond
+    - Wakes up Instagram's realtime connection before sending message
+    - Helps messages appear faster by triggering Instagram's notification system
+    - Applied to all message types: text, photo, video, and audio
+    - 500ms delay after typing indicator ensures Instagram processes it
+    - Should significantly improve message visibility without manual refresh
+  
+- **2025-10-31**: Fixed Message Processing Errors & Instagram API Limitation Documented
   - **CRITICAL FIX - Eliminated Repeated Message Errors**: Fixed self-message loop causing spam
     - Root Cause: Bot was processing its own sent messages, creating infinite loop
     - Solution: Moved self-message check to run BEFORE any message processing

@@ -201,6 +201,19 @@ class InstagramBot {
     return {
       sendMessage: async (text, threadId) => {
         try {
+          // Send typing indicator to "wake up" the chat before sending message
+          // This triggers Instagram's realtime system and helps messages appear faster
+          try {
+            if (self.ig.dm && typeof self.ig.dm.indicateActivity === 'function') {
+              await self.ig.dm.indicateActivity(threadId);
+              // Small delay to let Instagram process the typing indicator
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          } catch (typingError) {
+            // Typing indicator is optional, don't fail if it doesn't work
+            logger.debug('Could not send typing indicator', { error: typingError.message });
+          }
+          
           const result = await self.ig.dm.sendMessage(threadId, text);
           
           // Store the message ID for potential unsend operations (persistent storage)
@@ -302,6 +315,16 @@ class InstagramBot {
 
       sendPhoto: async (photoPath, threadId, caption = '') => {
         try {
+          // Send typing indicator to wake up the chat
+          try {
+            if (self.ig.dm && typeof self.ig.dm.indicateActivity === 'function') {
+              await self.ig.dm.indicateActivity(threadId);
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          } catch (typingError) {
+            logger.debug('Could not send typing indicator', { error: typingError.message });
+          }
+          
           const result = await self.ig.dm.sendPhoto(threadId, photoPath);
           
           logger.debug('Photo sent successfully', { threadId, photoPath });
@@ -320,6 +343,16 @@ class InstagramBot {
 
       sendVideo: async (videoPath, threadId, caption = '') => {
         try {
+          // Send typing indicator to wake up the chat
+          try {
+            if (self.ig.dm && typeof self.ig.dm.indicateActivity === 'function') {
+              await self.ig.dm.indicateActivity(threadId);
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          } catch (typingError) {
+            logger.debug('Could not send typing indicator', { error: typingError.message });
+          }
+          
           const result = await self.ig.dm.sendVideo(threadId, videoPath);
           
           logger.debug('Video sent successfully', { threadId, videoPath });
@@ -338,6 +371,16 @@ class InstagramBot {
 
       sendAudio: async (audioPath, threadId) => {
         try {
+          // Send typing indicator to wake up the chat
+          try {
+            if (self.ig.dm && typeof self.ig.dm.indicateActivity === 'function') {
+              await self.ig.dm.indicateActivity(threadId);
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          } catch (typingError) {
+            logger.debug('Could not send typing indicator', { error: typingError.message });
+          }
+          
           const result = await self.ig.dm.sendVoiceNote(threadId, audioPath);
           
           logger.debug('Audio sent successfully', { threadId, audioPath });
