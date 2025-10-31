@@ -4,12 +4,16 @@
 This is a highly advanced Instagram bot built with Node.js and the neokex-ica chat API. The bot is designed to handle Instagram messages, commands, and events similar to GoatbotV2's architecture.
 
 ## Recent Changes
-- **2025-10-31 (Latest)**: Performance Optimization & Message Management
+- **2025-10-31 (Latest)**: Message Visibility & Prefix Command Fixes
+  - **Message Visibility Fixed**: Messages now show immediately in chat
+    - Added 500ms post-send delay to ensure Instagram processes messages
+    - No more need to refresh chat to see bot responses
+  - **Prefix Command Behavior**: Proper separation of info display vs. command execution
+    - Type `prefix` (without prefix) → Shows current global and thread prefix info
+    - Type `!prefix` (with prefix) → Shows usage instructions
+    - Type `!prefix <new>` → Changes prefix for that chat/group
+    - Matches GoatBot V2 behavior exactly
   - **Removed Auto-Seen**: Messages are no longer automatically marked as seen
-  - **Zero Delays**: Removed all artificial message sending delays for instant responses
-    - Eliminated 100-300ms pre-send delays
-    - Eliminated 800ms post-send wait time
-    - Removed thread refresh calls
   - **Persistent Message Tracking**: Sent messages now stored in database
     - Messages can be unsent even after bot restarts
     - Up to 50 messages per thread stored
@@ -17,8 +21,6 @@ This is a highly advanced Instagram bot built with Node.js and the neokex-ica ch
   - **Enhanced Unsend Command**: Two modes of operation
     - Reply to a message and type `unsend` to delete it
     - Type `unsend` without reply to delete the bot's last message
-  - **Prefix Command Accessibility**: `prefix` command now works without requiring the prefix
-    - Users can always access prefix settings even if they forget their custom prefix
 
 - **2025-10-31**: Runtime Error Fixes & Prefix Feature
   - **Runtime Error Fixes**: Fixed all remaining runtime errors
