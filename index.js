@@ -206,14 +206,33 @@ class InstagramBot {
         return new Promise((resolve, reject) => {
           self.messageQueue.add(async () => {
             try {
+              // Add small delay before sending (human-like behavior)
+              await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
+              
               const result = await self.ig.dm.sendMessage(threadId, text);
-              logger.debug('Message sent', { threadId, messageLength: text.length });
+              
+              // Add small delay after sending to confirm delivery
+              await new Promise(resolve => setTimeout(resolve, 300));
+              
+              logger.debug('Message sent and confirmed', { threadId, messageLength: text.length });
               resolve(result);
             } catch (error) {
-              logger.error('Failed to send message', {
-                error: error.message,
-                threadId
-              });
+              const errorMsg = error.message || '';
+              
+              // Check for rate limit errors
+              if (errorMsg.includes('rate') || errorMsg.includes('429') || errorMsg.includes('spam')) {
+                logger.error('Rate limit or spam detected - slowing down', {
+                  error: errorMsg,
+                  threadId
+                });
+                // Add extra delay on rate limit
+                await new Promise(resolve => setTimeout(resolve, 5000));
+              } else {
+                logger.error('Failed to send message', {
+                  error: errorMsg,
+                  threadId
+                });
+              }
               reject(error);
             }
           });
@@ -224,14 +243,33 @@ class InstagramBot {
         return new Promise((resolve, reject) => {
           self.messageQueue.add(async () => {
             try {
+              // Add small delay before sending (human-like behavior)
+              await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
+              
               const result = await self.ig.dm.sendMessageToUser(userId, text);
-              logger.debug('Direct message sent to user', { userId, messageLength: text.length });
+              
+              // Add small delay after sending to confirm delivery
+              await new Promise(resolve => setTimeout(resolve, 300));
+              
+              logger.debug('Direct message sent and confirmed', { userId, messageLength: text.length });
               resolve(result);
             } catch (error) {
-              logger.error('Failed to send direct message', {
-                error: error.message,
-                userId
-              });
+              const errorMsg = error.message || '';
+              
+              // Check for rate limit errors
+              if (errorMsg.includes('rate') || errorMsg.includes('429') || errorMsg.includes('spam')) {
+                logger.error('Rate limit or spam detected - slowing down', {
+                  error: errorMsg,
+                  userId
+                });
+                // Add extra delay on rate limit
+                await new Promise(resolve => setTimeout(resolve, 5000));
+              } else {
+                logger.error('Failed to send direct message', {
+                  error: errorMsg,
+                  userId
+                });
+              }
               reject(error);
             }
           });

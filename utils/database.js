@@ -8,6 +8,7 @@ class Database {
     this.dbPath = path.resolve(config.DATA_PATH, 'database.json');
     this.data = {
       users: {},
+      threads: {},
       stats: {},
       economy: {},
       reminders: [],
@@ -40,6 +41,7 @@ class Database {
         
         this.data = {
           users: parsed.users || {},
+          threads: parsed.threads || {},
           stats: parsed.stats || {},
           economy: parsed.economy || {},
           reminders: parsed.reminders || [],
@@ -59,6 +61,7 @@ class Database {
       logger.error('Failed to load database', { error: error.message });
       this.data = {
         users: {},
+        threads: {},
         stats: {},
         economy: {},
         reminders: [],
@@ -299,6 +302,34 @@ class Database {
     });
     
     logger.info('Cleared old data from database');
+  }
+
+  // Thread methods
+  getThreadData(threadId) {
+    if (!this.data.threads[threadId]) {
+      this.data.threads[threadId] = {
+        id: threadId,
+        prefix: null,
+        settings: {},
+        createdAt: Date.now()
+      };
+    }
+    return this.data.threads[threadId];
+  }
+
+  setThreadData(threadId, data) {
+    const threadData = this.getThreadData(threadId);
+    Object.assign(threadData, data);
+    this.data.threads[threadId] = threadData;
+    return threadData;
+  }
+
+  deleteThreadData(threadId) {
+    if (this.data.threads[threadId]) {
+      delete this.data.threads[threadId];
+      return true;
+    }
+    return false;
   }
 }
 

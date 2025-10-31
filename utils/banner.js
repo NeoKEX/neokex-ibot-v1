@@ -32,7 +32,9 @@ class Banner {
   static messageReceived(from, preview) {
     // Reduced logging for message events - only log in debug mode
     if (config.LOG_LEVEL === 'debug') {
-      logger.debug(`Message from ${from}: ${preview.substring(0, 40)}...`);
+      const previewStr = String(preview || '');
+      const truncated = previewStr.length > 40 ? previewStr.substring(0, 40) + '...' : previewStr;
+      logger.debug(`Message from ${from}: ${truncated}`);
     }
   }
 

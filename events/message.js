@@ -56,17 +56,21 @@ module.exports = {
         }
       }
 
+      // Get thread-specific prefix or use global prefix
+      const threadData = database.getThreadData(event.threadId);
+      const prefix = threadData?.prefix || config.PREFIX;
+
       // Check if message is a command
-      if (event.body && event.body.startsWith(config.PREFIX)) {
-        const args = event.body.slice(config.PREFIX.length).trim().split(/ +/);
+      if (event.body && event.body.startsWith(prefix)) {
+        const args = event.body.slice(prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
         
         // Check if user typed only the prefix
         if (!commandName) {
           return api.sendMessage(
             `ℹ️ You typed only the prefix!\n\n` +
-            `My prefix is: ${config.PREFIX}\n` +
-            `Type ${config.PREFIX}help to see all commands.`,
+            `Current prefix: ${prefix}\n` +
+            `Type ${prefix}help to see all commands.`,
             event.threadId
           );
         }
@@ -81,10 +85,10 @@ module.exports = {
           let errorMsg = `❌ Unknown command: "${commandName}"\n\n`;
           
           if (closestMatch && closestMatch.distance <= 3) {
-            errorMsg += `💡 Did you mean: ${config.PREFIX}${closestMatch.command}?\n\n`;
+            errorMsg += `💡 Did you mean: ${prefix}${closestMatch.command}?\n\n`;
           }
           
-          errorMsg += `Type ${config.PREFIX}help to see all available commands.`;
+          errorMsg += `Type ${prefix}help to see all available commands.`;
           
           return api.sendMessage(errorMsg, event.threadId);
         }
