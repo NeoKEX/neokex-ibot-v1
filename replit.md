@@ -4,6 +4,24 @@
 This is a highly advanced Instagram bot built with Node.js and the neokex-ica chat API. The bot is designed to handle Instagram messages, commands, and events similar to GoatbotV2's architecture.
 
 ## Recent Changes
+- **2025-10-31 (Latest)**: Runtime Error Fixes & Prefix Feature
+  - **Runtime Error Fixes**: Fixed all remaining runtime errors
+    - Fixed Banner.messageReceived to handle all data types (objects, strings, null)
+    - Fixed typing indicator with proper function existence checks
+    - Fixed event.body handling to skip non-text messages (links, images, etc.)
+  - **Prefix Command**: New `prefix` command with per-thread customization
+    - Thread-specific prefix support (stored in database)
+    - Global prefix changes (admin only)
+    - Reset to default functionality
+    - Auto-injected dependencies (no manual imports needed)
+  - **Database Enhancement**: Added thread data storage system
+    - getThreadData, setThreadData, deleteThreadData methods
+  - **Rate Limiting Optimization**: Instagram-friendly message delays
+    - 1200ms base delay + 200-800ms random jitter
+    - Prevents spam detection and auto-unsent messages
+    - Retry logic with exponential backoff
+  - **Bot Status**: ✅ Running error-free with all 23 commands operational
+
 - **2025-10-31**: Major Bug Fixes & Advanced Features Implementation
   - **Security**: Fixed critical security vulnerability in calc.js (replaced unsafe eval() with safe numeric-only expression evaluator)
   - **Error Logging**: Added proper error logging to 15+ command files (ping, help, info, echo, calc, choose, dice, coinflip, quote, time, uid, userinfo, joke, credits, dev)
@@ -52,7 +70,7 @@ This is a highly advanced Instagram bot built with Node.js and the neokex-ica ch
 ├── index.js              # Main bot engine with Instagram connection
 ├── config.js             # Configuration management
 ├── account.txt           # Instagram cookies in Netscape format (user must provide)
-├── commands/             # 22 Command modules
+├── commands/             # 23 Command modules
 │   ├── ai.js            # AI/GPT integration
 │   ├── 8ball.js         # Magic 8-ball game
 │   ├── admin.js         # Admin management
@@ -68,6 +86,7 @@ This is a highly advanced Instagram bot built with Node.js and the neokex-ica ch
 │   ├── joke.js          # Random jokes
 │   ├── manage.js        # Auto-response management
 │   ├── ping.js          # Check bot response time
+│   ├── prefix.js        # Prefix management (thread & global)
 │   ├── quote.js         # Inspirational quotes
 │   ├── rps.js           # Rock Paper Scissors game
 │   ├── stats.js         # Bot & user statistics
@@ -107,13 +126,14 @@ None set yet.
 ### Core Features
 - Cookie-based Instagram authentication
 - Comprehensive event handling system
-- Command system with prefix support (default: !)
+- Command system with customizable prefixes (global & per-thread)
 - Automatic error recovery and reconnection
-- Message queue to prevent rate limiting
+- Intelligent message queue with Instagram-friendly rate limiting
 - Advanced logging with file and console output
 - Dynamic command and event loading
 - Cooldown system for commands
 - Graceful shutdown handling
+- Robust error handling for all message types
 
 ### Advanced Features (GoatBot V2-level)
 - **Moderation System**:
@@ -125,6 +145,7 @@ None set yet.
 - **Database System**:
   - JSON-based persistent storage
   - User activity tracking
+  - Thread-specific data storage
   - Statistics collection
   - Economy system foundation
   - Auto-save functionality
@@ -143,6 +164,7 @@ None set yet.
   - Coin flip
   - Random jokes and quotes
 - **Admin Tools**:
+  - Prefix customization (per-thread & global)
   - Auto-response management
   - User statistics dashboard
   - Bot statistics and monitoring
@@ -157,7 +179,7 @@ None set yet.
 - axios: HTTP requests
 
 ## Current State
-✅ **Fully Operational** - All 22 commands loaded successfully, comprehensive moderation system active, database system functional, and bot running without errors.
+✅ **Fully Operational** - All 23 commands loaded successfully, comprehensive moderation system active, database system functional, and bot running without errors. Latest runtime errors fixed and prefix customization feature added.
 
 ### Completed Features (8/20 major tasks)
 1. ✅ Error logging fixed across all commands
