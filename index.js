@@ -209,9 +209,17 @@ class InstagramBot {
             database.storeSentMessage(threadId, result.item_id);
           }
           
-          // Increased delay to ensure Instagram processes the message and makes it visible
-          // Instagram needs more time to sync messages across devices/UI
-          await new Promise(resolve => setTimeout(resolve, 3000));
+          // Refresh the thread to force Instagram UI to show the message immediately
+          // This prevents the issue where messages don't appear until user leaves and re-enters
+          try {
+            await self.ig.dm.getThread(threadId);
+            logger.debug('Thread refreshed after sending message', { threadId });
+          } catch (refreshError) {
+            logger.warn('Could not refresh thread, but message was sent', { 
+              threadId, 
+              error: refreshError.message 
+            });
+          }
           
           logger.debug('Message sent', { threadId, messageLength: text.length });
           return result;
@@ -308,8 +316,16 @@ class InstagramBot {
         try {
           const result = await self.ig.dm.sendPhoto(threadId, photoPath);
           
-          // Delay to ensure Instagram processes the message
-          await new Promise(resolve => setTimeout(resolve, 3000));
+          // Refresh the thread to force Instagram UI to show the photo immediately
+          try {
+            await self.ig.dm.getThread(threadId);
+            logger.debug('Thread refreshed after sending photo', { threadId });
+          } catch (refreshError) {
+            logger.warn('Could not refresh thread, but photo was sent', { 
+              threadId, 
+              error: refreshError.message 
+            });
+          }
           
           logger.debug('Photo sent', { threadId, photoPath });
           Banner.success(`Photo sent to thread ${threadId}`);
@@ -329,8 +345,16 @@ class InstagramBot {
         try {
           const result = await self.ig.dm.sendVideo(threadId, videoPath);
           
-          // Delay to ensure Instagram processes the message
-          await new Promise(resolve => setTimeout(resolve, 3000));
+          // Refresh the thread to force Instagram UI to show the video immediately
+          try {
+            await self.ig.dm.getThread(threadId);
+            logger.debug('Thread refreshed after sending video', { threadId });
+          } catch (refreshError) {
+            logger.warn('Could not refresh thread, but video was sent', { 
+              threadId, 
+              error: refreshError.message 
+            });
+          }
           
           logger.debug('Video sent', { threadId, videoPath });
           Banner.success(`Video sent to thread ${threadId}`);
@@ -350,8 +374,16 @@ class InstagramBot {
         try {
           const result = await self.ig.dm.sendVoiceNote(threadId, audioPath);
           
-          // Delay to ensure Instagram processes the message
-          await new Promise(resolve => setTimeout(resolve, 3000));
+          // Refresh the thread to force Instagram UI to show the audio immediately
+          try {
+            await self.ig.dm.getThread(threadId);
+            logger.debug('Thread refreshed after sending audio', { threadId });
+          } catch (refreshError) {
+            logger.warn('Could not refresh thread, but audio was sent', { 
+              threadId, 
+              error: refreshError.message 
+            });
+          }
           
           logger.debug('Audio sent', { threadId, audioPath });
           Banner.success(`Audio sent to thread ${threadId}`);

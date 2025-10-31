@@ -4,11 +4,14 @@
 This is a highly advanced Instagram bot built with Node.js and the neokex-ica chat API. The bot is designed to handle Instagram messages, commands, and events similar to GoatbotV2's architecture.
 
 ## Recent Changes
-- **2025-10-31 (Latest)**: Message Visibility Enhancement & PermissionManager Fix
-  - **Message Visibility Optimized**: Increased post-send delay to 3000ms (3 seconds)
-    - Instagram needs this delay to properly sync messages across UI
-    - Messages should now appear immediately without refreshing chat
+- **2025-10-31 (Latest)**: Fixed Instant Message Visibility Issue
+  - **CRITICAL FIX - Messages Now Appear Immediately**: Implemented thread refresh after sending
+    - Root Cause: Instagram's client-side UI wasn't auto-refreshing after bot sends messages
+    - Solution: After sending any message, bot now fetches the thread to force UI update
+    - Result: Messages appear instantly in chat without needing to leave/re-enter
     - Applied to all message types: text, photo, video, and audio
+    - Removed unnecessary 3-second delays - messages are now instant
+    - Bot responses are now immediate with zero artificial delays
   - **PermissionManager Error Fixed**: Fixed dependency injection in admin command
     - All helper methods now receive PermissionManager and ConfigManager parameters
     - showAdminPanel, listAdmins, addAdmin, removeAdmin methods updated
