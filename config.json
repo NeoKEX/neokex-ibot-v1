@@ -54,11 +54,11 @@
   },
   
   "rateLimiting": {
-    "messageDelay": 2000,
-    "commandCooldown": 3000,
-    "photoCooldown": 5000,
-    "videoCooldown": 5000,
-    "maxCommandsPerMinute": 20
+    "messageDelay": 200,
+    "commandCooldown": 500,
+    "photoCooldown": 1000,
+    "videoCooldown": 1000,
+    "maxCommandsPerMinute": 60
   },
   
   "polling": {
