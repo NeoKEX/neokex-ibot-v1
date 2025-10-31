@@ -61,10 +61,32 @@ module.exports = {
         const args = event.body.slice(config.PREFIX.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
         
+        // Check if user typed only the prefix
+        if (!commandName) {
+          return api.sendMessage(
+            `ℹ️ You typed only the prefix!\n\n` +
+            `My prefix is: ${config.PREFIX}\n` +
+            `Type ${config.PREFIX}help to see all commands.`,
+            event.threadId
+          );
+        }
+        
         const command = commandLoader.getCommand(commandName);
         
         if (!command) {
-          return;
+          // Find closest matching command
+          const allCommandNames = commandLoader.getAllCommandNames();
+          const closestMatch = this.findClosestCommand(commandName, allCommandNames);
+          
+          let errorMsg = `❌ Unknown command: "${commandName}"\n\n`;
+          
+          if (closestMatch && closestMatch.distance <= 3) {
+            errorMsg += `💡 Did you mean: ${config.PREFIX}${closestMatch.command}?\n\n`;
+          }
+          
+          errorMsg += `Type ${config.PREFIX}help to see all available commands.`;
+          
+          return api.sendMessage(errorMsg, event.threadId);
         }
 
         // Check cooldown
@@ -148,5 +170,57 @@ module.exports = {
         stack: error.stack
       });
     }
+  },
+
+  /**
+   * Find closest matching command using Levenshtein distance
+   */
+  findClosestCommand(input, commandList) {
+    let closestCommand = null;
+    let minDistance = Infinity;
+
+    for (const cmd of commandList) {
+      const distance = this.levenshteinDistance(input.toLowerCase(), cmd.toLowerCase());
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestCommand = cmd;
+      }
+    }
+
+    return closestCommand ? { command: closestCommand, distance: minDistance } : null;
+  },
+
+  /**
+   * Calculate Levenshtein distance between two strings
+   */
+  levenshteinDistance(str1, str2) {
+    const len1 = str1.length;
+    const len2 = str2.length;
+    const matrix = [];
+
+    // Initialize matrix
+    for (let i = 0; i <= len1; i++) {
+      matrix[i] = [i];
+    }
+    for (let j = 0; j <= len2; j++) {
+      matrix[0][j] = j;
+    }
+
+    // Fill matrix
+    for (let i = 1; i <= len1; i++) {
+      for (let j = 1; j <= len2; j++) {
+        if (str1[i - 1] === str2[j - 1]) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1, // substitution
+            matrix[i][j - 1] + 1,     // insertion
+            matrix[i - 1][j] + 1      // deletion
+          );
+        }
+      }
+    }
+
+    return matrix[len1][len2];
   }
 };
