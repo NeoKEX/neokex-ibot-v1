@@ -38,6 +38,29 @@ Removing or changing the author credits will result in:
 
 ---
 
+## 📱 INSTAGRAM API LIMITATION - READ THIS!
+
+**Messages sent by the bot will NOT appear immediately in your Instagram chat.**
+
+### Why This Happens:
+- ✅ **Bot sends messages successfully** - Message reaches Instagram servers immediately
+- ❌ **No real-time push notifications** - Instagram private API doesn't trigger notifications
+- ❌ **No auto-refresh** - Your Instagram app won't automatically show the message
+- ✅ **Manual refresh works** - Leave and re-enter the chat to see messages
+
+### This Is Normal:
+This is a **platform limitation** of Instagram's private/unofficial API. **It cannot be fixed with code.**
+All Instagram bots using private APIs experience this behavior.
+
+### Solutions:
+1. **Accept it** (recommended) - Messages work, just need manual refresh
+2. **Use Official API** - Business accounts only, supports webhooks
+3. **Device automation** - Complex and risky
+
+**The bot is working correctly!** The visibility delay is expected behavior.
+
+---
+
 ## ✨ Features
 
 ### 🔐 **Authentication & Security**

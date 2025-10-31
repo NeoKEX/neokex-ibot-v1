@@ -209,19 +209,7 @@ class InstagramBot {
             database.storeSentMessage(threadId, result.item_id);
           }
           
-          // Refresh the thread to force Instagram UI to show the message immediately
-          // This prevents the issue where messages don't appear until user leaves and re-enters
-          try {
-            await self.ig.dm.getThread(threadId);
-            logger.debug('Thread refreshed after sending message', { threadId });
-          } catch (refreshError) {
-            logger.warn('Could not refresh thread, but message was sent', { 
-              threadId, 
-              error: refreshError.message 
-            });
-          }
-          
-          logger.debug('Message sent', { threadId, messageLength: text.length });
+          logger.debug('Message sent successfully', { threadId, messageLength: text.length });
           return result;
         } catch (error) {
           const errorMsg = error.message || '';
@@ -316,18 +304,7 @@ class InstagramBot {
         try {
           const result = await self.ig.dm.sendPhoto(threadId, photoPath);
           
-          // Refresh the thread to force Instagram UI to show the photo immediately
-          try {
-            await self.ig.dm.getThread(threadId);
-            logger.debug('Thread refreshed after sending photo', { threadId });
-          } catch (refreshError) {
-            logger.warn('Could not refresh thread, but photo was sent', { 
-              threadId, 
-              error: refreshError.message 
-            });
-          }
-          
-          logger.debug('Photo sent', { threadId, photoPath });
+          logger.debug('Photo sent successfully', { threadId, photoPath });
           Banner.success(`Photo sent to thread ${threadId}`);
           return result;
         } catch (error) {
@@ -345,18 +322,7 @@ class InstagramBot {
         try {
           const result = await self.ig.dm.sendVideo(threadId, videoPath);
           
-          // Refresh the thread to force Instagram UI to show the video immediately
-          try {
-            await self.ig.dm.getThread(threadId);
-            logger.debug('Thread refreshed after sending video', { threadId });
-          } catch (refreshError) {
-            logger.warn('Could not refresh thread, but video was sent', { 
-              threadId, 
-              error: refreshError.message 
-            });
-          }
-          
-          logger.debug('Video sent', { threadId, videoPath });
+          logger.debug('Video sent successfully', { threadId, videoPath });
           Banner.success(`Video sent to thread ${threadId}`);
           return result;
         } catch (error) {
@@ -374,18 +340,7 @@ class InstagramBot {
         try {
           const result = await self.ig.dm.sendVoiceNote(threadId, audioPath);
           
-          // Refresh the thread to force Instagram UI to show the audio immediately
-          try {
-            await self.ig.dm.getThread(threadId);
-            logger.debug('Thread refreshed after sending audio', { threadId });
-          } catch (refreshError) {
-            logger.warn('Could not refresh thread, but audio was sent', { 
-              threadId, 
-              error: refreshError.message 
-            });
-          }
-          
-          logger.debug('Audio sent', { threadId, audioPath });
+          logger.debug('Audio sent successfully', { threadId, audioPath });
           Banner.success(`Audio sent to thread ${threadId}`);
           return result;
         } catch (error) {
@@ -449,8 +404,26 @@ class InstagramBot {
    */
   async handleMessage(message) {
     try {
+      // Extract the full message object (nested in message.message field)
+      const fullMessage = message.message || message;
+      
+      // Extract user ID early to check if it's from self
+      const senderID = message.userId || message.user_id || fullMessage.user_id || message.senderId;
+      
+      // IMPORTANT: Ignore messages from self FIRST before any processing
+      // This prevents the bot from processing its own sent messages
+      if (senderID && senderID === this.userID) {
+        logger.debug('Ignoring message from self', { senderID });
+        return;
+      }
+      
+      // Extract item ID with proper fallback chain
+      const itemId = message.item_id || message.itemId || fullMessage.item_id;
+      const threadId = message.thread_id || message.threadId;
+      
       // Create a unique ID for this message to prevent duplicates
-      const messageId = `${message.threadId}-${message.itemId || message.timestamp}`;
+      // Use item_id if available, otherwise fall back to timestamp
+      const messageId = itemId ? `${threadId}-${itemId}` : `${threadId}-${message.timestamp || Date.now()}`;
       
       // Skip old messages (only process messages from the last 5 minutes)
       const messageTimestamp = message.timestamp || Date.now();
@@ -471,9 +444,6 @@ class InstagramBot {
       
       // Mark message as processed in database (persists across restarts)
       database.markMessageAsProcessed(messageId);
-
-      // Extract the full message object (nested in message.message field)
-      const fullMessage = message.message || message;
       
       // Log raw message structure for debugging (only in debug mode)
       if (config.LOG_LEVEL === 'debug') {
@@ -483,17 +453,18 @@ class InstagramBot {
           hasReply: !!(fullMessage.replied_to_message || fullMessage.replied_to_item_id || 
                       fullMessage.reply_to_message || fullMessage.parent_message),
           itemType: fullMessage.item_type,
-          text: fullMessage.text
+          text: fullMessage.text,
+          senderID: senderID
         });
       }
 
       // Transform message to event format
       const event = {
-        threadId: message.threadId || message.thread_id,
-        messageId: message.itemId || message.item_id || fullMessage.item_id || messageId,
-        senderID: message.userId || message.user_id || fullMessage.user_id || message.senderId,
+        threadId: threadId,
+        messageId: itemId || messageId,
+        senderID: senderID,
         body: message.text || fullMessage.text || message.message || '',
-        timestamp: message.timestamp || fullMessage.timestamp || Date.now(),
+        timestamp: messageTimestamp,
         type: message.itemType || message.item_type || fullMessage.item_type || 'text',
         // Include reply information - check multiple possible field names in fullMessage
         replyToItemId: fullMessage.replied_to_message?.item_id || 
@@ -508,11 +479,6 @@ class InstagramBot {
         // Store raw message for debugging
         _rawMessage: config.LOG_LEVEL === 'debug' ? fullMessage : undefined
       };
-
-      // Ignore messages from self
-      if (event.senderID === this.userID) {
-        return;
-      }
 
       // Handle message event
       await this.eventLoader.handleEvent('message', event);

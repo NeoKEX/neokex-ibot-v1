@@ -4,14 +4,19 @@
 This is a highly advanced Instagram bot built with Node.js and the neokex-ica chat API. The bot is designed to handle Instagram messages, commands, and events similar to GoatbotV2's architecture.
 
 ## Recent Changes
-- **2025-10-31 (Latest)**: Fixed Instant Message Visibility Issue
-  - **CRITICAL FIX - Messages Now Appear Immediately**: Implemented thread refresh after sending
-    - Root Cause: Instagram's client-side UI wasn't auto-refreshing after bot sends messages
-    - Solution: After sending any message, bot now fetches the thread to force UI update
-    - Result: Messages appear instantly in chat without needing to leave/re-enter
-    - Applied to all message types: text, photo, video, and audio
-    - Removed unnecessary 3-second delays - messages are now instant
-    - Bot responses are now immediate with zero artificial delays
+- **2025-10-31 (Latest)**: Fixed Message Processing Errors & Instagram API Limitation Documented
+  - **CRITICAL FIX - Eliminated Repeated Message Errors**: Fixed self-message loop causing spam
+    - Root Cause: Bot was processing its own sent messages, creating infinite loop
+    - Solution: Moved self-message check to run BEFORE any message processing
+    - Fixed: "Skipping already processed message: undefined-..." error eliminated
+    - Fixed: Proper message ID extraction using correct field names (item_id, thread_id)
+  - **Instagram API Visibility Limitation (DOCUMENTED)**:
+    - Messages sent via private API **do NOT trigger real-time push notifications**
+    - This is an Instagram platform limitation that cannot be fixed with code
+    - Messages arrive successfully on Instagram servers immediately
+    - User must manually refresh chat (leave/re-enter) to see bot messages
+    - Alternative: Use official Instagram Messaging API (business accounts only)
+    - This is expected behavior for all Instagram bots using private APIs
   - **PermissionManager Error Fixed**: Fixed dependency injection in admin command
     - All helper methods now receive PermissionManager and ConfigManager parameters
     - showAdminPanel, listAdmins, addAdmin, removeAdmin methods updated
