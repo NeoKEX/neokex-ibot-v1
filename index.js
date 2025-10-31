@@ -420,9 +420,10 @@ class InstagramBot {
         logger.debug('Raw message object:', {
           topLevelKeys: Object.keys(message),
           fullMessageKeys: Object.keys(fullMessage),
-          fullMessageData: JSON.stringify(fullMessage, null, 2),
           hasReply: !!(fullMessage.replied_to_message || fullMessage.replied_to_item_id || 
-                      fullMessage.reply_to_message || fullMessage.parent_message)
+                      fullMessage.reply_to_message || fullMessage.parent_message),
+          itemType: fullMessage.item_type,
+          text: fullMessage.text
         });
       }
 
