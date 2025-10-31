@@ -62,10 +62,10 @@
   },
   
   "polling": {
-    "interval": 5000,
+    "interval": 2000,
     "retryOnError": true,
     "maxRetries": 3,
-    "retryDelay": 10000
+    "retryDelay": 5000
   },
   
   "connection": {
