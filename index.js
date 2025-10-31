@@ -2,7 +2,6 @@ const { default: InstagramChatAPI } = require('neokex-ica');
 const fs = require('fs');
 const config = require('./config');
 const logger = require('./utils/logger');
-const MessageQueue = require('./utils/messageQueue');
 const CommandLoader = require('./utils/commandLoader');
 const EventLoader = require('./utils/eventLoader');
 const Banner = require('./utils/banner');
@@ -16,7 +15,6 @@ class InstagramBot {
     this.api = null;
     this.userID = null;
     this.username = null;
-    this.messageQueue = new MessageQueue();
     this.commandLoader = new CommandLoader();
     this.eventLoader = new EventLoader(this);
     this.reconnectAttempts = 0;
@@ -203,75 +201,70 @@ class InstagramBot {
     
     return {
       sendMessage: async (text, threadId) => {
-        return new Promise((resolve, reject) => {
-          self.messageQueue.add(async () => {
-            try {
-              const result = await self.ig.dm.sendMessage(threadId, text);
-              
-              // Store the message ID for potential unsend operations (persistent storage)
-              if (result && result.item_id) {
-                const database = require('./utils/database');
-                database.storeSentMessage(threadId, result.item_id);
-              }
-              
-              // Increased delay to ensure Instagram processes the message and makes it visible
-              // Instagram needs more time to sync messages across devices/UI
-              await new Promise(resolve => setTimeout(resolve, 2000));
-              
-              logger.debug('Message sent', { threadId, messageLength: text.length });
-              resolve(result);
-            } catch (error) {
-              const errorMsg = error.message || '';
-              
-              // Check for rate limit errors
-              if (errorMsg.includes('rate') || errorMsg.includes('429') || errorMsg.includes('spam')) {
-                logger.error('Rate limit or spam detected - slowing down', {
-                  error: errorMsg,
-                  threadId
-                });
-                // Add extra delay on rate limit
-                await new Promise(resolve => setTimeout(resolve, 5000));
-              } else {
-                logger.error('Failed to send message', {
-                  error: errorMsg,
-                  threadId
-                });
-              }
-              reject(error);
-            }
-          });
-        });
+        try {
+          const result = await self.ig.dm.sendMessage(threadId, text);
+          
+          // Store the message ID for potential unsend operations (persistent storage)
+          if (result && result.item_id) {
+            const database = require('./utils/database');
+            database.storeSentMessage(threadId, result.item_id);
+          }
+          
+          // Increased delay to ensure Instagram processes the message and makes it visible
+          // Instagram needs more time to sync messages across devices/UI
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          logger.debug('Message sent', { threadId, messageLength: text.length });
+          return result;
+        } catch (error) {
+          const errorMsg = error.message || '';
+          
+          // Check for rate limit errors
+          if (errorMsg.includes('rate') || errorMsg.includes('429') || errorMsg.includes('spam')) {
+            logger.error('Rate limit or spam detected - slowing down', {
+              error: errorMsg,
+              threadId
+            });
+            // Add extra delay on rate limit
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          } else {
+            logger.error('Failed to send message', {
+              error: errorMsg,
+              threadId
+            });
+          }
+          throw error;
+        }
       },
 
       sendMessageToUser: async (text, userId) => {
-        return new Promise((resolve, reject) => {
-          self.messageQueue.add(async () => {
-            try {
-              const result = await self.ig.dm.sendMessageToUser(userId, text);
-              
-              logger.debug('Direct message sent', { userId, messageLength: text.length });
-              resolve(result);
-            } catch (error) {
-              const errorMsg = error.message || '';
-              
-              // Check for rate limit errors
-              if (errorMsg.includes('rate') || errorMsg.includes('429') || errorMsg.includes('spam')) {
-                logger.error('Rate limit or spam detected - slowing down', {
-                  error: errorMsg,
-                  userId
-                });
-                // Add extra delay on rate limit
-                await new Promise(resolve => setTimeout(resolve, 5000));
-              } else {
-                logger.error('Failed to send direct message', {
-                  error: errorMsg,
-                  userId
-                });
-              }
-              reject(error);
-            }
-          });
-        });
+        try {
+          const result = await self.ig.dm.sendMessageToUser(userId, text);
+          
+          // Delay to ensure Instagram processes the message
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          logger.debug('Direct message sent', { userId, messageLength: text.length });
+          return result;
+        } catch (error) {
+          const errorMsg = error.message || '';
+          
+          // Check for rate limit errors
+          if (errorMsg.includes('rate') || errorMsg.includes('429') || errorMsg.includes('spam')) {
+            logger.error('Rate limit or spam detected - slowing down', {
+              error: errorMsg,
+              userId
+            });
+            // Add extra delay on rate limit
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          } else {
+            logger.error('Failed to send direct message', {
+              error: errorMsg,
+              userId
+            });
+          }
+          throw error;
+        }
       },
 
       getThread: async (threadId) => {
@@ -313,90 +306,84 @@ class InstagramBot {
       },
 
       sendPhoto: async (photoPath, threadId, caption = '') => {
-        return new Promise((resolve, reject) => {
-          self.messageQueue.add(async () => {
-            try {
-              const result = await self.ig.dm.sendPhoto(threadId, photoPath);
-              logger.debug('Photo sent', { threadId, photoPath });
-              Banner.success(`Photo sent to thread ${threadId}`);
-              resolve(result);
-            } catch (error) {
-              logger.error('Failed to send photo', {
-                error: error.message,
-                threadId,
-                photoPath
-              });
-              Banner.error('Send Photo', error.message);
-              reject(error);
-            }
+        try {
+          const result = await self.ig.dm.sendPhoto(threadId, photoPath);
+          
+          // Delay to ensure Instagram processes the message
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          logger.debug('Photo sent', { threadId, photoPath });
+          Banner.success(`Photo sent to thread ${threadId}`);
+          return result;
+        } catch (error) {
+          logger.error('Failed to send photo', {
+            error: error.message,
+            threadId,
+            photoPath
           });
-        });
+          Banner.error('Send Photo', error.message);
+          throw error;
+        }
       },
 
       sendVideo: async (videoPath, threadId, caption = '') => {
-        return new Promise((resolve, reject) => {
-          self.messageQueue.add(async () => {
-            try {
-              const result = await self.ig.dm.sendVideo(threadId, videoPath);
-              logger.debug('Video sent', { threadId, videoPath });
-              Banner.success(`Video sent to thread ${threadId}`);
-              resolve(result);
-            } catch (error) {
-              logger.error('Failed to send video', {
-                error: error.message,
-                threadId,
-                videoPath
-              });
-              Banner.error('Send Video', error.message);
-              reject(error);
-            }
+        try {
+          const result = await self.ig.dm.sendVideo(threadId, videoPath);
+          
+          // Delay to ensure Instagram processes the message
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          logger.debug('Video sent', { threadId, videoPath });
+          Banner.success(`Video sent to thread ${threadId}`);
+          return result;
+        } catch (error) {
+          logger.error('Failed to send video', {
+            error: error.message,
+            threadId,
+            videoPath
           });
-        });
+          Banner.error('Send Video', error.message);
+          throw error;
+        }
       },
 
       sendAudio: async (audioPath, threadId) => {
-        return new Promise((resolve, reject) => {
-          self.messageQueue.add(async () => {
-            try {
-              const result = await self.ig.dm.sendVoiceNote(threadId, audioPath);
-              logger.debug('Audio sent', { threadId, audioPath });
-              Banner.success(`Audio sent to thread ${threadId}`);
-              resolve(result);
-            } catch (error) {
-              logger.error('Failed to send audio', {
-                error: error.message,
-                threadId,
-                audioPath
-              });
-              Banner.error('Send Audio', error.message);
-              reject(error);
-            }
+        try {
+          const result = await self.ig.dm.sendVoiceNote(threadId, audioPath);
+          
+          // Delay to ensure Instagram processes the message
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          logger.debug('Audio sent', { threadId, audioPath });
+          Banner.success(`Audio sent to thread ${threadId}`);
+          return result;
+        } catch (error) {
+          logger.error('Failed to send audio', {
+            error: error.message,
+            threadId,
+            audioPath
           });
-        });
+          Banner.error('Send Audio', error.message);
+          throw error;
+        }
       },
 
       unsendMessage: async (threadId, itemId) => {
-        return new Promise((resolve, reject) => {
-          self.messageQueue.add(async () => {
-            try {
-              await self.ig.dm.unsendMessage(threadId, itemId);
-              logger.debug('Message unsent', { threadId, itemId });
-              
-              // Remove from persistent storage
-              const database = require('./utils/database');
-              database.removeSentMessage(threadId, itemId);
-              
-              resolve();
-            } catch (error) {
-              logger.error('Failed to unsend message', {
-                error: error.message,
-                threadId,
-                itemId
-              });
-              reject(error);
-            }
+        try {
+          await self.ig.dm.unsendMessage(threadId, itemId);
+          logger.debug('Message unsent', { threadId, itemId });
+          
+          // Remove from persistent storage
+          const database = require('./utils/database');
+          database.removeSentMessage(threadId, itemId);
+        } catch (error) {
+          logger.error('Failed to unsend message', {
+            error: error.message,
+            threadId,
+            itemId
           });
-        });
+          throw error;
+        }
       },
       
       getLastSentMessage: (threadId) => {
@@ -562,10 +549,6 @@ class InstagramBot {
         this.ig.stopListening();
         logger.info('Stopped listening for messages');
       }
-      
-      // Clear message queue
-      logger.info('Clearing message queue...');
-      this.messageQueue.clear();
       
       logger.info('Bot shutdown complete');
       process.exit(0);
