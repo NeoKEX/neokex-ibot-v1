@@ -20,7 +20,6 @@ class InstagramBot {
     this.reconnectAttempts = 0;
     this.shouldReconnect = config.AUTO_RECONNECT;
     this.isRunning = false;
-    this.processedMessages = new Set();
   }
 
   setupCleanLogging() {
@@ -421,29 +420,25 @@ class InstagramBot {
       // Create a unique ID for this message to prevent duplicates
       const messageId = `${message.threadId}-${message.itemId || message.timestamp}`;
       
-      // Skip old messages (only process messages from the last 2 minutes)
+      // Skip old messages (only process messages from the last 5 minutes)
       const messageTimestamp = message.timestamp || Date.now();
       const currentTime = Date.now();
-      const twoMinutesAgo = currentTime - (2 * 60 * 1000);
+      const fiveMinutesAgo = currentTime - (5 * 60 * 1000);
       
-      if (messageTimestamp < twoMinutesAgo) {
+      if (messageTimestamp < fiveMinutesAgo) {
         logger.debug(`Skipping old message from ${new Date(messageTimestamp).toISOString()}`);
         return;
       }
       
-      // Skip if we've already processed this message
-      if (this.processedMessages.has(messageId)) {
+      // Skip if we've already processed this message (check database for persistence)
+      const database = require('./utils/database');
+      if (database.isMessageProcessed(messageId)) {
+        logger.debug(`Skipping already processed message: ${messageId}`);
         return;
       }
       
-      // Add to processed set
-      this.processedMessages.add(messageId);
-      
-      // Clean up old processed messages (keep last 1000)
-      if (this.processedMessages.size > 1000) {
-        const toDelete = Array.from(this.processedMessages).slice(0, 100);
-        toDelete.forEach(id => this.processedMessages.delete(id));
-      }
+      // Mark message as processed in database (persists across restarts)
+      database.markMessageAsProcessed(messageId);
 
       // Extract the full message object (nested in message.message field)
       const fullMessage = message.message || message;
