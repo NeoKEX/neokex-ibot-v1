@@ -214,6 +214,9 @@ class InstagramBot {
                 database.storeSentMessage(threadId, result.item_id);
               }
               
+              // Small delay to ensure Instagram processes the message
+              await new Promise(resolve => setTimeout(resolve, 500));
+              
               logger.debug('Message sent', { threadId, messageLength: text.length });
               resolve(result);
             } catch (error) {

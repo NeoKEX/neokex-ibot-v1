@@ -17,19 +17,17 @@ module.exports = {
       const threadId = event.threadId;
       const userId = event.senderID;
 
-      // If no arguments, show current prefix
+      // If no arguments, change prefix for the group (this is when they type !prefix without args)
       if (args.length === 0) {
-        const threadPrefix = database.getThreadData(threadId)?.prefix || currentPrefix;
-        
-        let message = `📌 PREFIX INFORMATION\n\n`;
-        message += `🌐 Global System Prefix: ${currentPrefix}\n`;
-        message += `🛸 Your Thread Prefix: ${threadPrefix}\n\n`;
-        message += `💡 Usage:\n`;
-        message += `  • ${currentPrefix}prefix <new> - Change prefix for this chat\n`;
-        message += `  • ${currentPrefix}prefix reset - Reset to default\n`;
-        message += `  • ${currentPrefix}prefix <new> -g - Change globally (admin only)`;
-        
-        return api.sendMessage(message, threadId);
+        return api.sendMessage(
+          `📌 PREFIX COMMAND\n\n` +
+          `Usage:\n` +
+          `  • ${currentPrefix}prefix <new> - Change prefix for this chat\n` +
+          `  • ${currentPrefix}prefix reset - Reset to default\n` +
+          `  • ${currentPrefix}prefix <new> -g - Change globally (admin only)\n\n` +
+          `💡 Tip: Type just "prefix" (without ${currentPrefix}) to see current prefix info`,
+          threadId
+        );
       }
 
       // Handle reset
