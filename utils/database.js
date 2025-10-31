@@ -17,7 +17,8 @@ class Database {
       bannedUsers: new Set(),
       spamWarnings: {},
       lastMessages: {},
-      sentMessages: {}
+      sentMessages: {},
+      processedMessages: {}
     };
     this.ensureDataDirectory();
     this.load();
@@ -51,7 +52,8 @@ class Database {
           bannedUsers: new Set(parsed.bannedUsers || []),
           spamWarnings: parsed.spamWarnings || {},
           lastMessages: parsed.lastMessages || {},
-          sentMessages: parsed.sentMessages || {}
+          sentMessages: parsed.sentMessages || {},
+          processedMessages: parsed.processedMessages || {}
         };
         
         logger.info('Database loaded successfully');
@@ -72,7 +74,8 @@ class Database {
         bannedUsers: new Set(),
         spamWarnings: {},
         lastMessages: {},
-        sentMessages: {}
+        sentMessages: {},
+        processedMessages: {}
       };
     }
   }
@@ -402,6 +405,36 @@ class Database {
     });
     
     logger.debug('Cleared old sent messages');
+  }
+
+  // Processed message tracking (prevents duplicate processing after restart)
+  isMessageProcessed(messageId) {
+    return this.data.processedMessages[messageId] !== undefined;
+  }
+
+  markMessageAsProcessed(messageId) {
+    this.data.processedMessages[messageId] = Date.now();
+    
+    // Keep only recent processed messages (last 5 minutes) to prevent memory bloat
+    this.cleanupProcessedMessages();
+  }
+
+  cleanupProcessedMessages() {
+    const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+    const messageIds = Object.keys(this.data.processedMessages);
+    
+    // Only cleanup if we have more than 1000 processed messages
+    if (messageIds.length > 1000) {
+      messageIds.forEach(msgId => {
+        if (this.data.processedMessages[msgId] < fiveMinutesAgo) {
+          delete this.data.processedMessages[msgId];
+        }
+      });
+      
+      logger.debug('Cleaned up old processed messages', { 
+        remaining: Object.keys(this.data.processedMessages).length 
+      });
+    }
   }
 }
 
