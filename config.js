@@ -106,7 +106,7 @@ export default {
   },
   
   // Logging
-  LOG_LEVEL: process.env.LOG_LEVEL || configJSON.logging?.level || 'info',
+  LOG_LEVEL: process.env.LOG_LEVEL || configJSON.logging?.level || 'debug',
   ENABLE_FILE_LOGGING: configJSON.logging?.enableFileLogging !== false,
   ENABLE_CONSOLE_LOGGING: configJSON.logging?.enableConsoleLogging !== false,
   LOG_COMMANDS: configJSON.logging?.logCommands !== false,

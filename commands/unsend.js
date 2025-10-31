@@ -1,4 +1,5 @@
 import logger from '../utils/logger.js';
+import config from '../config.js';
 
 export default {
   config: {
@@ -13,11 +14,25 @@ export default {
 
   async run({ api, event, bot }) {
     try {
+      // Debug: Log event structure
+      if (config.LOG_LEVEL === 'debug') {
+        logger.debug('Unsend command event:', {
+          hasReplyToItemId: !!event.replyToItemId,
+          eventKeys: Object.keys(event)
+        });
+      }
+
       // Check if this is a reply to a message
       if (!event.replyToItemId) {
+        // Provide more helpful error message
+        const debugInfo = config.LOG_LEVEL === 'debug' 
+          ? `\n\nDebug: Available fields: ${Object.keys(event).join(', ')}`
+          : '';
+        
         return api.sendMessage(
           '❌ Please reply to the message you want to unsend!\n\n' +
-          'Usage: Reply to any message and type !unsend',
+          'Usage: Reply to any message and type !unsend' +
+          debugInfo,
           event.threadId
         );
       }

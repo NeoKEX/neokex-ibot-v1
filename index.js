@@ -369,6 +369,16 @@ class InstagramBot {
       // Create a unique ID for this message to prevent duplicates
       const messageId = `${message.threadId}-${message.itemId || message.timestamp}`;
       
+      // Skip old messages (only process messages from the last 2 minutes)
+      const messageTimestamp = message.timestamp || Date.now();
+      const currentTime = Date.now();
+      const twoMinutesAgo = currentTime - (2 * 60 * 1000);
+      
+      if (messageTimestamp < twoMinutesAgo) {
+        logger.debug(`Skipping old message from ${new Date(messageTimestamp).toISOString()}`);
+        return;
+      }
+      
       // Skip if we've already processed this message
       if (this.processedMessages.has(messageId)) {
         return;
@@ -383,6 +393,14 @@ class InstagramBot {
         toDelete.forEach(id => this.processedMessages.delete(id));
       }
 
+      // Log raw message structure for debugging (only in debug mode)
+      if (config.LOG_LEVEL === 'debug') {
+        logger.debug('Raw message object:', {
+          keys: Object.keys(message),
+          hasReply: !!(message.replyToItemId || message.replied_to_item_id || message.replyTo || message.reply_to_message)
+        });
+      }
+
       // Transform message to event format
       const event = {
         threadId: message.threadId || message.thread_id,
@@ -391,11 +409,15 @@ class InstagramBot {
         body: message.text || message.message || '',
         timestamp: message.timestamp || Date.now(),
         type: message.itemType || message.item_type || 'text',
-        // Include reply information if present
-        replyToItemId: message.replyToItemId || message.replied_to_item_id || message.replyTo || null,
+        // Include reply information - check multiple possible field names
+        replyToItemId: message.replyToItemId || message.replied_to_item_id || 
+                       message.replyTo || message.reply_to_message || 
+                       message.reply_to_item_id || null,
         // Include additional message metadata
         attachments: message.attachments || [],
-        isVoiceMessage: message.is_voice_message || false
+        isVoiceMessage: message.is_voice_message || false,
+        // Store raw message for debugging
+        _rawMessage: config.LOG_LEVEL === 'debug' ? message : undefined
       };
 
       // Ignore messages from self
