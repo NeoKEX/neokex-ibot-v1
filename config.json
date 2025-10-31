@@ -1,0 +1,152 @@
+{
+  "bot": {
+    "name": "NeoKEX iBOT V1",
+    "version": "1.0.0",
+    "author": "NeoKEX",
+    "github": "https://github.com/NeoKEX",
+    "prefix": "!",
+    "description": "Advanced Instagram Bot with full automation features"
+  },
+  
+  "permissions": {
+    "admins": [],
+    "developer": "",
+    "whitelist": {
+      "enabled": false,
+      "users": []
+    },
+    "blacklist": {
+      "enabled": false,
+      "users": []
+    },
+    "groupAdmins": {
+      "enabled": true,
+      "canUseAdminCommands": false
+    }
+  },
+  
+  "features": {
+    "autoReply": true,
+    "autoRead": true,
+    "autoReact": false,
+    "typingIndicator": true,
+    "antiSpam": true,
+    "commandLogging": true,
+    "welcomeMessage": {
+      "enabled": false,
+      "message": "Hello! Thanks for messaging me. Type !help to see available commands."
+    }
+  },
+  
+  "moderation": {
+    "antiSpam": {
+      "enabled": true,
+      "maxMessagesPerMinute": 10,
+      "banDuration": 300000,
+      "warningMessage": "⚠️ Please slow down! You're sending messages too quickly."
+    },
+    "autoBlock": {
+      "enabled": false,
+      "blockOnSpam": false,
+      "blockOnBadWords": false,
+      "badWords": []
+    }
+  },
+  
+  "rateLimiting": {
+    "messageDelay": 2000,
+    "commandCooldown": 3000,
+    "photoCooldown": 5000,
+    "videoCooldown": 5000,
+    "maxCommandsPerMinute": 20
+  },
+  
+  "polling": {
+    "interval": 5000,
+    "retryOnError": true,
+    "maxRetries": 3,
+    "retryDelay": 10000
+  },
+  
+  "connection": {
+    "autoReconnect": true,
+    "maxReconnectAttempts": 5,
+    "reconnectDelay": 5000,
+    "sessionTimeout": 3600000
+  },
+  
+  "commands": {
+    "caseSensitive": false,
+    "allowAliases": true,
+    "dmOnly": false,
+    "groupOnly": false,
+    "disabledCommands": []
+  },
+  
+  "responses": {
+    "errorMessages": {
+      "noPermission": "❌ You don't have permission to use this command.",
+      "adminOnly": "🔒 This command is only available to admins.",
+      "developerOnly": "👨‍💻 This command is only available to the developer.",
+      "cooldown": "⏱️ Please wait {time} seconds before using this command again.",
+      "commandNotFound": "❓ Command not found. Type !help for available commands.",
+      "whitelistOnly": "⚠️ This bot is in whitelist mode. You are not authorized to use it.",
+      "blacklisted": "🚫 You have been blacklisted from using this bot."
+    },
+    "successMessages": {
+      "commandExecuted": "✅ Command executed successfully!",
+      "messageSent": "✅ Message sent!",
+      "photoSent": "✅ Photo sent!",
+      "videoSent": "✅ Video sent!"
+    }
+  },
+  
+  "logging": {
+    "level": "info",
+    "enableFileLogging": true,
+    "enableConsoleLogging": true,
+    "logCommands": true,
+    "logMessages": true,
+    "logErrors": true,
+    "maxLogSize": "10m",
+    "maxLogFiles": 5
+  },
+  
+  "paths": {
+    "account": "./account.txt",
+    "commands": "./commands",
+    "events": "./events",
+    "logs": "./logs",
+    "data": "./data",
+    "temp": "./temp"
+  },
+  
+  "database": {
+    "enabled": false,
+    "type": "json",
+    "path": "./data/database.json",
+    "autoSave": true,
+    "saveInterval": 60000
+  },
+  
+  "notifications": {
+    "onStart": true,
+    "onError": true,
+    "onNewUser": false,
+    "notifyAdmin": {
+      "enabled": false,
+      "adminId": "",
+      "events": ["error", "newUser", "spam"]
+    }
+  },
+  
+  "advanced": {
+    "debugMode": false,
+    "verboseLogging": false,
+    "cacheMessages": true,
+    "maxCacheSize": 1000,
+    "cleanupInterval": 3600000,
+    "timezone": "UTC",
+    "language": "en"
+  }
+}
